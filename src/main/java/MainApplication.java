@@ -1,4 +1,5 @@
 
+import GUI.UIGeneral;
 import org.pushingpixels.substance.api.skin.*;
 
 import javax.swing.*;
