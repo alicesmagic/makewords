@@ -4,7 +4,7 @@ import java.util.TreeSet;
 /**
  * Интерфейс обеспечивает доступ к словарю
  */
-public interface IEmployeeRepository {
+public interface IWordsRepository {
     /**
      * Метод обеспечивает поиск слова в словаре по начальным буквам
      * @param sub - начальная часть слова для поиска
@@ -29,4 +29,9 @@ public interface IEmployeeRepository {
      * @return - найденное слово
      */
     TreeSet<String> getAll();
+
+    /**
+     * Метод сохраняет словарь в текущем виде
+     */
+    void saveDictionary();
 }
