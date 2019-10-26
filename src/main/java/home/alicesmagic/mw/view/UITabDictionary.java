@@ -1,4 +1,4 @@
-package GUI;
+package home.alicesmagic.mw.view;
 
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
@@ -9,7 +9,7 @@ import java.awt.*;
 class UITabDictionary extends JPanel {
     UITabDictionary() {
         this.setLayout(new GridBagLayout());
-        int n = 75698;
+        int n = 0;
 
         JTextField tfSearch = new JTextField(15);
         tfSearch.setFont(new Font("Arial", Font.PLAIN, 20));

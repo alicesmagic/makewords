@@ -1,4 +1,4 @@
-package GUI;
+package home.alicesmagic.mw.view;
 
 import javax.swing.*;
 import java.awt.*;
