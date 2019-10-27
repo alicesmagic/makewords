@@ -13,9 +13,9 @@ public class UIGeneral extends JFrame {
 
     public UIGeneral() {
         super("Subworder");
-//        this.setResizable(false);
+        this.setResizable(false);
+        this.setLocation(640,150);
 //        this.setLocationRelativeTo(null);
-        this.setLocation(900,150);
         this.setSize(320, 600);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -26,7 +26,7 @@ public class UIGeneral extends JFrame {
         tp.setFont(new Font("Arial", Font.PLAIN, 18));
         tp.addTab("Поиск слов", new UITabWords());
         tp.addTab("Словарь", new UITabDictionary());
-        add(tp);
+        this.add(tp);
         this.setVisible(true);
 
     }

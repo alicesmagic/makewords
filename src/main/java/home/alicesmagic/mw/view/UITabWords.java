@@ -1,6 +1,6 @@
 package home.alicesmagic.mw.view;
 
-import home.alicesmagic.mw.logic.MakerOfWords;
+import home.alicesmagic.mw.logic.WordsHunter;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -8,25 +8,26 @@ import java.awt.*;
 
 public class UITabWords extends JPanel {
     private static JTextField tfWord;
+    private static JButton bRun;
     private static JTextPane tpResult;
     private static JSpinner sLength;
     private static int maxLetters = 4;
 
     UITabWords() {
-        MakerOfWords makerOfWords = new MakerOfWords(UIGeneral.getRepository());
+        WordsHunter wordsHunter = new WordsHunter(UIGeneral.getRepository());
         this.setLayout(new GridBagLayout());
 
         tfWord = new JTextField(15);
         tfWord.setFont(new Font("Arial", Font.PLAIN, 25));
         tfWord.setHorizontalAlignment(JTextField.CENTER);
-        tfWord.addActionListener(makerOfWords);
+        tfWord.addActionListener(wordsHunter);
         this.add(tfWord, new GridBagConstraints(0, 0,
                 3, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
 
-        JButton bRun = new JButton("Поиск слов");
+        bRun = new JButton("Поиск слов");
         bRun.setFont(new Font("Arial", Font.PLAIN, 18));
-        bRun.addActionListener(makerOfWords);
+        bRun.addActionListener(wordsHunter);
         this.add(bRun, new GridBagConstraints(0, 1,
                 3, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -37,6 +38,7 @@ public class UITabWords extends JPanel {
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         tpResult.setFont(new Font("Arial", Font.PLAIN, 20));
+//        tpResult;
         JScrollPane spResult = new JScrollPane(tpResult);
         this.add(spResult, new GridBagConstraints(0, 2,
                 3, 1, 0.1, 1.0,
@@ -52,7 +54,7 @@ public class UITabWords extends JPanel {
         sLength = new JSpinner(new SpinnerNumberModel(
                 maxLetters, 2, 20, 1));
         sLength.setFont(new Font("Arial", Font.PLAIN, 16));
-        sLength.addChangeListener(makerOfWords);
+        sLength.addChangeListener(wordsHunter);
         this.add(sLength, new GridBagConstraints(1, 3,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -85,4 +87,7 @@ public class UITabWords extends JPanel {
         return tfWord;
     }
 
+    public static JButton getbRun() {
+        return bRun;
+    }
 }

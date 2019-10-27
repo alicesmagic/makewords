@@ -9,11 +9,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 
-public class MakerOfWords implements ActionListener, ChangeListener {
+public class WordsHunter implements ActionListener, ChangeListener {
     private static String[] dict;
     private static StringBuilder removeBox = new StringBuilder();
 
-    public MakerOfWords(WordsRepository repository) {
+    public WordsHunter(WordsRepository repository) {
         dict = getDictAsArray(repository);
     }
 
@@ -62,18 +62,22 @@ public class MakerOfWords implements ActionListener, ChangeListener {
         return removeBox.length() == 0;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
+    private void huntingStart() {
         String result = getSubWords(
                 UITabWords.getMaxLetters(), UITabWords.getTfWord().getText());
         UITabWords.getTpResult().setText(result);
+        UITabWords.getTpResult().setCaretPosition(0);
+        UITabWords.getbRun().requestFocus();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        huntingStart();
     }
 
     @Override
     public void stateChanged(ChangeEvent e) {
         UITabWords.setMaxLetters((int)UITabWords.getsLength().getValue());
-        String result = getSubWords(
-                UITabWords.getMaxLetters(), UITabWords.getTfWord().getText());
-        UITabWords.getTpResult().setText(result);
+        huntingStart();
     }
 }
