@@ -1,9 +1,9 @@
 package home.alicesmagic.mw.model.storage;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Scanner;
 import java.util.TreeSet;
 /**
  * Класс реализующий интерфейс IDataStorage и обеспечивающий хранение
@@ -26,9 +26,8 @@ public class DataStorage implements IDataStorage {
             for  (String w : words) {
                 pw.println(w);
             }
-        }
-        catch(IOException exc) {
-            System.out.println("Ошибка ввода-вывода: " + exc);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -39,17 +38,14 @@ public class DataStorage implements IDataStorage {
     @Override
     public TreeSet<String> load() {
         TreeSet<String> words = new TreeSet<>();
-        try (Scanner in = new Scanner(new FileReader(fileName))) {
-            // В первой позиции в файле может оказаться служебный
-            // символ. Следующее две строки сохраняют слово в чистом виде
-            String first = in.nextLine();
-            words.add(first.substring(first.indexOf('а')));
-            while (in.hasNextLine()) {
-                words.add(in.nextLine());
-            }
-        }
-        catch(IOException exc) {
-            System.out.println("Ошибка ввода-вывода: " + exc);
+        try {
+            BufferedReader bufferedReader = new BufferedReader(
+                    new FileReader(fileName));
+            String strFile;
+            while ((strFile = bufferedReader.readLine()) != null)
+                words.add(strFile);
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
         return words;
     }

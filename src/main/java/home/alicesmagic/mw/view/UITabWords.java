@@ -1,32 +1,32 @@
 package home.alicesmagic.mw.view;
 
-import home.alicesmagic.mw.logic.WordsListener;
+import home.alicesmagic.mw.logic.MakerOfWords;
 
 import javax.swing.*;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.*;
 import java.awt.*;
 
 public class UITabWords extends JPanel {
+    private static JTextField tfWord;
     private static JTextPane tpResult;
     private static JSpinner sLength;
     private static int maxLetters = 4;
 
     UITabWords() {
+        MakerOfWords makerOfWords = new MakerOfWords(UIGeneral.getRepository());
         this.setLayout(new GridBagLayout());
 
-        JTextField tfWord = new JTextField(15);
+        tfWord = new JTextField(15);
         tfWord.setFont(new Font("Arial", Font.PLAIN, 25));
         tfWord.setHorizontalAlignment(JTextField.CENTER);
-        tfWord.addActionListener(new WordsListener());
+        tfWord.addActionListener(makerOfWords);
         this.add(tfWord, new GridBagConstraints(0, 0,
                 3, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
 
         JButton bRun = new JButton("Поиск слов");
         bRun.setFont(new Font("Arial", Font.PLAIN, 18));
-        bRun.addActionListener(new WordsListener());
+        bRun.addActionListener(makerOfWords);
         this.add(bRun, new GridBagConstraints(0, 1,
                 3, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -52,7 +52,7 @@ public class UITabWords extends JPanel {
         sLength = new JSpinner(new SpinnerNumberModel(
                 maxLetters, 2, 20, 1));
         sLength.setFont(new Font("Arial", Font.PLAIN, 16));
-        sLength.addChangeListener(new WordsListener());
+        sLength.addChangeListener(makerOfWords);
         this.add(sLength, new GridBagConstraints(1, 3,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -79,6 +79,10 @@ public class UITabWords extends JPanel {
 
     public static void setMaxLetters(int maxLetters) {
         UITabWords.maxLetters = maxLetters;
+    }
+
+    public static JTextField getTfWord() {
+        return tfWord;
     }
 
 }

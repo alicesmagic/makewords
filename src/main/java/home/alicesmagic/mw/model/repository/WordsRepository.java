@@ -40,4 +40,13 @@ public class WordsRepository implements IWordsRepository {
     public void saveDictionary() {
         this.dataStorage.save(dictionary);
     }
+
+    @Override
+    public String toColString() {
+        StringBuilder sb = new StringBuilder();
+        for (String s : dictionary) {
+            sb.append(s).append("\n");
+        }
+        return sb.toString();
+    }
 }

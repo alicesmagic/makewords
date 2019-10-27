@@ -1,15 +1,12 @@
 package home.alicesmagic.mw.view;
 
 import javax.swing.*;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.*;
 import java.awt.*;
 
-class UITabDictionary extends JPanel {
+public class UITabDictionary extends JPanel {
     UITabDictionary() {
         this.setLayout(new GridBagLayout());
-        int n = 0;
 
         JTextField tfSearch = new JTextField(15);
         tfSearch.setFont(new Font("Arial", Font.PLAIN, 20));
@@ -31,11 +28,13 @@ class UITabDictionary extends JPanel {
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         tpDictionary.setFont(new Font("Arial", Font.PLAIN, 20));
         JScrollPane spDictionary = new JScrollPane(tpDictionary);
+//        tpDictionary.setText(UIGeneral.getRepository().toColString());
         this.add(spDictionary, new GridBagConstraints(0, 2,
                 1, 1, 0.1, 1.0,
                 10, 1, UIGeneral.ins, 0, 0));
 
-        JLabel lQuantity = new JLabel("Количество слов в словаре: " + n);
+        JLabel lQuantity = new JLabel("Количество слов в словаре: "
+                + UIGeneral.getRepository().getAll().size());
         lQuantity.setFont(new Font("Arial", Font.PLAIN, 16));
         lQuantity.setHorizontalAlignment(JTextField.CENTER);
         this.add(lQuantity, new GridBagConstraints(0, 3,
