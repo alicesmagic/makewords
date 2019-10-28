@@ -16,7 +16,6 @@ public class UITabWords extends JPanel {
     UITabWords() {
         WordsHunter wordsHunter = new WordsHunter(UIGeneral.getRepository());
         this.setLayout(new GridBagLayout());
-
         tfWord = new JTextField(15);
         tfWord.setFont(new Font("Arial", Font.PLAIN, 25));
         tfWord.setHorizontalAlignment(JTextField.CENTER);
@@ -52,7 +51,7 @@ public class UITabWords extends JPanel {
                 10, 1, UIGeneral.ins, 0, 0));
 
         sLength = new JSpinner(new SpinnerNumberModel(
-                maxLetters, 2, 20, 1));
+                maxLetters, 2, 24, 1));
         sLength.setFont(new Font("Arial", Font.PLAIN, 16));
         sLength.addChangeListener(wordsHunter);
         this.add(sLength, new GridBagConstraints(1, 3,

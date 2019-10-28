@@ -26,10 +26,9 @@ public class WordsHunter implements ActionListener, ChangeListener {
     private String getSubWords(int minLengthWord, String patLetters) {
         int oldLength = patLetters.length() + 1;
         int curLength;
-
         StringBuilder res = new StringBuilder();
         for (String wordDict : dict) {
-            if (wordDict.length() >= patLetters.length()) continue;
+            if (wordDict.length() > patLetters.length()) continue;
             if (wordDict.length() >= minLengthWord) {
                 if (pseudoEquails(patLetters, wordDict)) {
                     curLength = wordDict.length();
@@ -48,6 +47,7 @@ public class WordsHunter implements ActionListener, ChangeListener {
     }
 
     private boolean pseudoEquails(String letters, String word) {
+        if (letters.equals(word)) return false;
         for (int i = 0; i < word.length(); i++) {
             if (letters.indexOf(word.charAt(i)) == -1) return false;
         }
@@ -63,8 +63,8 @@ public class WordsHunter implements ActionListener, ChangeListener {
     }
 
     private void huntingStart() {
-        String result = getSubWords(
-                UITabWords.getMaxLetters(), UITabWords.getTfWord().getText());
+        String result = getSubWords(UITabWords.getMaxLetters(),
+                UITabWords.getTfWord().getText().toLowerCase());
         UITabWords.getTpResult().setText(result);
         UITabWords.getTpResult().setCaretPosition(0);
         UITabWords.getbRun().requestFocus();
