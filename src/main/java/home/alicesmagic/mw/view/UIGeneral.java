@@ -14,9 +14,9 @@ public class UIGeneral extends JFrame {
     public UIGeneral() {
         super("Subworder");
         this.setResizable(false);
-        this.setLocation(640,150);
-//        this.setLocationRelativeTo(null);
         this.setSize(320, 600);
+        this.setLocationRelativeTo(null);
+//        this.setLocation(1000,150); // для удобства отладки
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         DataStorage dataStorage = new DataStorage("rus");

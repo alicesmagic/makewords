@@ -1,15 +1,10 @@
 package home.alicesmagic.mw.logic;
 
 import home.alicesmagic.mw.model.repository.WordsRepository;
-import home.alicesmagic.mw.view.UITabWords;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
 
-public class WordsHunter implements ActionListener, ChangeListener {
+public class WordsHunter {
     private static String[] dict;
     private static StringBuilder removeBox = new StringBuilder();
 
@@ -23,7 +18,7 @@ public class WordsHunter implements ActionListener, ChangeListener {
         return stringList.toArray(new String[0]);
     }
 
-    private String getSubWords(int minLengthWord, String patLetters) {
+    public String getSubWords(int minLengthWord, String patLetters) {
         int oldLength = patLetters.length() + 1;
         int curLength;
         StringBuilder res = new StringBuilder();
@@ -60,24 +55,5 @@ public class WordsHunter implements ActionListener, ChangeListener {
             }
         }
         return removeBox.length() == 0;
-    }
-
-    private void huntingStart() {
-        String result = getSubWords(UITabWords.getMaxLetters(),
-                UITabWords.getTfWord().getText().toLowerCase());
-        UITabWords.getTpResult().setText(result);
-        UITabWords.getTpResult().setCaretPosition(0);
-        UITabWords.getbRun().requestFocus();
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        huntingStart();
-    }
-
-    @Override
-    public void stateChanged(ChangeEvent e) {
-        UITabWords.setMaxLetters((int)UITabWords.getsLength().getValue());
-        huntingStart();
     }
 }
