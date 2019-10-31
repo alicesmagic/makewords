@@ -14,13 +14,12 @@ import java.awt.event.*;
 
 class UITabWords extends JPanel {
     private JTextField tfWord;
-    private JButton bRun;
     private JTextPane tpResult;
     private JSpinner sLength;
     private int maxLetters = 4;
 
-    static IndexesLangInput indexes;
-    {
+    private static IndexesLangInput indexes;
+    static {
         indexes = new IndexesLangInput();
     }
 
@@ -41,7 +40,7 @@ class UITabWords extends JPanel {
                 10, 1, UIGeneral.ins, 0, 0));
 
         // Кнопка выполнения поиска слов
-        bRun = new JButton("Поиск слов");
+        JButton bRun = new JButton("Поиск слов");
         bRun.setFont(new Font("Arial", Font.PLAIN, 18));
         bRun.addActionListener(al); // слушатель на клик
         this.add(bRun, new GridBagConstraints(0, 1,
@@ -96,7 +95,6 @@ class UITabWords extends JPanel {
                 tfWord.getText().toLowerCase());
         tpResult.setText(result);
         tpResult.setCaretPosition(0);
-        bRun.requestFocus();
     }
 
     /**
