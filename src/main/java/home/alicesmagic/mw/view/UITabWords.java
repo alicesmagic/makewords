@@ -19,6 +19,11 @@ class UITabWords extends JPanel {
     private JSpinner sLength;
     private int maxLetters = 4;
 
+    static IndexesLangInput indexes;
+    {
+        indexes = new IndexesLangInput();
+    }
+
     // Формирование вкладки "Поиск слов" интерфейса
     UITabWords() {
         this.setLayout(new GridBagLayout());
@@ -159,7 +164,6 @@ class UITabWords extends JPanel {
      * @param e - событие DocumentEvent
      */
     private void textFilterToRussian(DocumentEvent e) throws BadLocationException {
-        IndexesLangInput indexes = new IndexesLangInput();
         char[] temp = e.getDocument().getText(e.getOffset(), e.getLength())
                 .toCharArray();
         int tempIndex;
