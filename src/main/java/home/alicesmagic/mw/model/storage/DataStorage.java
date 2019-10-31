@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.TreeSet;
 /**
  * Класс реализующий интерфейс IDataStorage и обеспечивающий хранение
@@ -39,8 +42,8 @@ public class DataStorage implements IDataStorage {
     public TreeSet<String> load() {
         TreeSet<String> words = new TreeSet<>();
         try {
-            BufferedReader bufferedReader = new BufferedReader(
-                    new FileReader(fileName));
+            BufferedReader bufferedReader = Files.newBufferedReader(
+                    Paths.get(fileName), StandardCharsets.UTF_8);
             String strFile;
             while ((strFile = bufferedReader.readLine()) != null)
                 words.add(strFile);

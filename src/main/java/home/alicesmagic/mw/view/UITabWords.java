@@ -93,17 +93,14 @@ class UITabWords extends JPanel {
     }
 
     class KListener extends KeyAdapter {
-        final String engLow = "qwertyuiop[]asdfghjkl;'zxcvbnm,.";
-        final String engUp = "QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>";
-        final String rus = "йцукенгшщзхъфывапролджэячсмитьбю";
+        final String eng = "QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>qwertyuiop[]asdfghjkl;'zxcvbnm,.";
+        final String rus = "ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮйцукенгшщзхъфывапролджэячсмитьбю";
         @Override
         public void keyReleased(KeyEvent e) {
             if (tfWord.getText().isEmpty()) return;
             char ch = tfWord.getText().toLowerCase().charAt(tfWord.getText().length() - 1);
-            if (engLow.contains("" + ch)) {
-                ch = rus.charAt(engLow.indexOf(ch));
-            } else if (engUp.contains("" + ch)) {
-                ch = rus.charAt(engUp.indexOf(ch));
+            if (eng.indexOf(ch) != -1) {
+                ch = rus.charAt(eng.indexOf(ch));
             }
             tfWord.setText(tfWord.getText().substring(0, tfWord.getText().length() - 1) + ch);
         }
