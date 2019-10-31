@@ -4,11 +4,13 @@ import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
 
-public class UITabDictionary extends JPanel {
+class UITabDictionary extends JPanel {
+    private JTextField tfSearch;
+
     UITabDictionary() {
         this.setLayout(new GridBagLayout());
 
-        JTextField tfSearch = new JTextField(15);
+        tfSearch = new JTextField(15);
         tfSearch.setFont(new Font("Arial", Font.PLAIN, 20));
         tfSearch.setHorizontalAlignment(JTextField.CENTER);
         this.add(tfSearch, new GridBagConstraints(0, 0,
@@ -40,5 +42,12 @@ public class UITabDictionary extends JPanel {
         this.add(lQuantity, new GridBagConstraints(0, 3,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
+    }
+
+    /**
+     * Метод, устанавливающий фокус в текствое поле ввода
+     */
+    void tfSearchFocus() {
+        tfSearch.requestFocus();
     }
 }

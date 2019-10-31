@@ -24,11 +24,14 @@ public class UIGeneral extends JFrame {
 
         JTabbedPane tp = new JTabbedPane(JTabbedPane.BOTTOM);
         tp.setFont(new Font("Arial", Font.PLAIN, 18));
-        tp.addTab("Поиск слов", new UITabWords());
-        tp.addTab("Словарь", new UITabDictionary());
+        UITabWords tabWords = new UITabWords();
+        tp.addTab("Поиск слов", tabWords);
+        UITabDictionary tabDictionary = new UITabDictionary();
+        tp.addTab("Словарь", tabDictionary);
         this.add(tp);
         this.setVisible(true);
-
+        tabDictionary.tfSearchFocus();
+        tabWords.tfWordFocus();
     }
 
     static WordsRepository getRepository() {
