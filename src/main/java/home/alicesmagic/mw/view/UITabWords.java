@@ -7,8 +7,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 class UITabWords extends JPanel {
     private JTextField tfWord;
@@ -18,19 +17,21 @@ class UITabWords extends JPanel {
     private int maxLetters = 4;
 
     UITabWords() {
-        WordsHunter wordsHunter = new WordsHunter(UIGeneral.getRepository());
         this.setLayout(new GridBagLayout());
+        AListener al = new AListener();
+
         tfWord = new JTextField(15);
         tfWord.setFont(new Font("Arial", Font.PLAIN, 25));
         tfWord.setHorizontalAlignment(JTextField.CENTER);
-        tfWord.addActionListener(new AcLis());
+        tfWord.addActionListener(al);
+        tfWord.addKeyListener(new KListener());
         this.add(tfWord, new GridBagConstraints(0, 0,
                 3, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
 
         bRun = new JButton("Поиск слов");
         bRun.setFont(new Font("Arial", Font.PLAIN, 18));
-        bRun.addActionListener(new AcLis());
+        bRun.addActionListener(al);
         this.add(bRun, new GridBagConstraints(0, 1,
                 3, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -56,7 +57,7 @@ class UITabWords extends JPanel {
         sLength = new JSpinner(new SpinnerNumberModel(
                 maxLetters, 2, 24, 1));
         sLength.setFont(new Font("Arial", Font.PLAIN, 16));
-        sLength.addChangeListener(new ChaLis());
+        sLength.addChangeListener(new ChListener());
         this.add(sLength, new GridBagConstraints(1, 3,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -78,16 +79,33 @@ class UITabWords extends JPanel {
         bRun.requestFocus();
     }
 
-    class AcLis implements ActionListener {
+    class AListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             hunting();
         }
     }
 
-    class ChaLis implements ChangeListener {
+    class ChListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             maxLetters = (int)sLength.getValue();
             hunting();
+        }
+    }
+
+    class KListener extends KeyAdapter {
+        final String engLow = "qwertyuiop[]asdfghjkl;'zxcvbnm,.";
+        final String engUp = "QWERTYUIOP{}ASDFGHJKL:\"ZXCVBNM<>";
+        final String rus = "йцукенгшщзхъфывапролджэячсмитьбю";
+        @Override
+        public void keyReleased(KeyEvent e) {
+            if (tfWord.getText().isEmpty()) return;
+            char ch = tfWord.getText().toLowerCase().charAt(tfWord.getText().length() - 1);
+            if (engLow.contains("" + ch)) {
+                ch = rus.charAt(engLow.indexOf(ch));
+            } else if (engUp.contains("" + ch)) {
+                ch = rus.charAt(engUp.indexOf(ch));
+            }
+            tfWord.setText(tfWord.getText().substring(0, tfWord.getText().length() - 1) + ch);
         }
     }
 }
