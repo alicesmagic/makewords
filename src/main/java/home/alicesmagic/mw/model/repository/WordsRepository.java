@@ -2,6 +2,7 @@ package home.alicesmagic.mw.model.repository;
 
 import home.alicesmagic.mw.model.storage.IDataStorage;
 
+import java.util.List;
 import java.util.TreeSet;
 
 public class WordsRepository implements IWordsRepository {
@@ -11,6 +12,11 @@ public class WordsRepository implements IWordsRepository {
     public WordsRepository(IDataStorage dataStorage) {
         this.dataStorage = dataStorage;
         this.dictionary = this.dataStorage.load();
+    }
+
+    public String findByInd(int n) {
+        List<String> ls = List.copyOf(dictionary);
+        return ls.get(n);
     }
 
     @Override
