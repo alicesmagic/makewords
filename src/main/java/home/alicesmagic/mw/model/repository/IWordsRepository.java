@@ -34,10 +34,4 @@ public interface IWordsRepository {
      * Метод сохраняет словарь в текущем виде
      */
     void saveDictionary();
-
-    /**
-     * Метод формирует String из слов в столбик
-     * для добавления в текстовую панель JTextPane
-     */
-    String toColString();
 }

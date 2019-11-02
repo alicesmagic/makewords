@@ -5,6 +5,7 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 class UITabDictionary extends JPanel {
     private JTextField tfSearch;
@@ -79,37 +80,60 @@ class UITabDictionary extends JPanel {
     class ShowListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             if (bShow.getText().equals("Показать весь словарь")) {
-                new LoadThread().start();
+                bShow.setText("Словарь загружается...");
+                new LoadThread().execute();
             }
         }
     }
 
     /**
-     * Класс отдельного потока загрузки словаря в текстовую панель
+     * Класс - наследник SwingWorker для загрузки словаря в текстовую панель
      */
-    class LoadThread extends Thread {
-        public void run() {
-            bShow.setText("Словарь загружается");
+    class LoadThread extends SwingWorker<String, Integer> {
+        // Формирование строки для последующего ее вывода в текстовую панель
+        // Выполняется в отдельном потоке
+        @Override
+        public String doInBackground() {
             int count = 0;
             StringBuilder sb = new StringBuilder();
             for (String s : UIGeneral.getRepository().getAll()) {
+                // Притормаживание загрузки в эстетических целях
                 try {
-                    if (count % 20 == 0) sleep(1);
+                    if (count % 20 == 0) {
+                        Thread.sleep(1);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 sb.append(s).append("\n");
-                int finalCount = count++;
-                SwingUtilities.invokeLater(() -> pBar.setValue(finalCount
-                        * 100 / UIGeneral.getRepository().getAll().size()));
+                publish(count++);
             }
-            bShow.setText("Формирование списка...");
-            SwingUtilities.invokeLater(() -> {
-                tpDictionary.setText(sb.toString());
-                tpDictionary.setCaretPosition(0);
-                bShow.setText("Словарь загружен");
-                pBar.setValue(100);
-            });
+            SwingUtilities.invokeLater(() -> bShow.setText("Формирование списка..."));
+            return sb.toString();
+        }
+
+        // Отражение процесса загрузки в прогресс-баре
+        // в потоке диспетчеризации событий
+        @Override
+        public void process(List<Integer> chunks) {
+            for (Integer chunk : chunks) {
+                pBar.setValue(chunk * 100 / UIGeneral.getRepository()
+                        .getAll().size());
+            }
+        }
+
+        // Вывод итоговой строки в текстовую панель
+        // в потоке диспетчеризации событий
+        @Override
+        public void done() {
+            try {
+                tpDictionary.setText(get());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            tpDictionary.setCaretPosition(0);
+            pBar.setValue(100);
+            bShow.setText("Словарь загружен");
         }
     }
 }
