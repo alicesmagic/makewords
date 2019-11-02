@@ -1,7 +1,5 @@
 package home.alicesmagic.mw.view;
 
-import home.alicesmagic.mw.model.repository.WordsRepository;
-
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
@@ -12,6 +10,7 @@ class UITabDictionary extends JPanel {
     private JTextField tfSearch;
     private JTextPane tpDictionary;
     private JProgressBar pBar;
+    private JButton bShow;
 
     UITabDictionary() {
         this.setLayout(new GridBagLayout());
@@ -27,7 +26,6 @@ class UITabDictionary extends JPanel {
 
         JButton bAdd = new JButton("Добавить в словарь");
         bAdd.setFont(new Font("Arial", Font.PLAIN, 18));
-//        bAdd.addActionListener(new ShowListener()); // слушатель на клик
         this.add(bAdd, new GridBagConstraints(0, 1,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -55,17 +53,17 @@ class UITabDictionary extends JPanel {
         pBar.setStringPainted(true);
         pBar.setMinimum(0);
         pBar.setMaximum(100);
+        pBar.setFont(new Font("Arial", Font.PLAIN, 14));
         this.add(pBar, new GridBagConstraints(0, 4,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
 
-        JButton bShow = new JButton("Показать весь словарь");
+        bShow = new JButton("Показать весь словарь");
         bShow.setFont(new Font("Arial", Font.PLAIN, 18));
         bShow.addActionListener(new ShowListener()); // слушатель на клик
         this.add(bShow, new GridBagConstraints(0, 5,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
-
     }
 
     /**
@@ -80,32 +78,38 @@ class UITabDictionary extends JPanel {
      */
     class ShowListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            showDictionary(UIGeneral.getRepository());
-            tpDictionary.setCaretPosition(0);
+            if (bShow.getText().equals("Показать весь словарь")) {
+                new LoadThread().start();
+            }
         }
     }
 
     /**
-     * Метод загружает словарь в текстовую панель
+     * Класс отдельного потока загрузки словаря в текстовую панель
      */
-    private void showDictionary(WordsRepository repository) {
-        new Thread(() -> {
+    class LoadThread extends Thread {
+        public void run() {
+            bShow.setText("Словарь загружается");
             int count = 0;
-            for (String s : repository.getAll()) {
+            StringBuilder sb = new StringBuilder();
+            for (String s : UIGeneral.getRepository().getAll()) {
                 try {
-                    tpDictionary.getDocument().insertString(tpDictionary
-                            .getDocument().getLength(), s + "\n", null);
-
-                } catch (BadLocationException e) {
+                    if (count % 20 == 0) sleep(1);
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                count++;
-                int finalCount = count;
-                SwingUtilities.invokeLater(() -> {
-                    pBar.setValue(finalCount * 100 / repository.getAll().size());
-                    repaint();
-                });
+                sb.append(s).append("\n");
+                int finalCount = count++;
+                SwingUtilities.invokeLater(() -> pBar.setValue(finalCount
+                        * 100 / UIGeneral.getRepository().getAll().size()));
             }
-        }).start();
+            bShow.setText("Формирование списка...");
+            SwingUtilities.invokeLater(() -> {
+                tpDictionary.setText(sb.toString());
+                tpDictionary.setCaretPosition(0);
+                bShow.setText("Словарь загружен");
+                pBar.setValue(100);
+            });
+        }
     }
 }
