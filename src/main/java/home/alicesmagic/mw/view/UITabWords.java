@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 class UITabWords extends JPanel {
-    private JTextField tfWord;
+    private JTextField tfLetters;
     private JTextPane tpResult;
     private JSpinner sLength;
     private JLabel lLetters;
@@ -21,14 +21,14 @@ class UITabWords extends JPanel {
         this.setLayout(new GridBagLayout());
 
         // Текстовое поле для ввода набора исходных символов
-        tfWord = new JTextField(15);
-        tfWord.setFont(new Font("Arial", Font.PLAIN, 25));
-        tfWord.setHorizontalAlignment(JTextField.CENTER);
-        AListener al = new AListener();
-        tfWord.addActionListener(al); // слушатель на <ENTER>
+        tfLetters = new JTextField(15);
+        tfLetters.setFont(new Font("Arial", Font.PLAIN, 25));
+        tfLetters.setHorizontalAlignment(JTextField.CENTER);
+        ActionL al = new ActionL();
+        tfLetters.addActionListener(al); // слушатель на <ENTER>
         // Слушатель на ввод символов
-        tfWord.getDocument().addDocumentListener(new UIGeneral.DocListener());
-        this.add(tfWord, new GridBagConstraints(0, 0,
+        tfLetters.getDocument().addDocumentListener(new UIGeneral.DocListener());
+        this.add(tfLetters, new GridBagConstraints(0, 0,
                 3, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
 
@@ -47,6 +47,7 @@ class UITabWords extends JPanel {
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         tpResult.setFont(new Font("Arial", Font.PLAIN, 20));
+        tpResult.setEditable(false);
         JScrollPane spResult = new JScrollPane(tpResult);
         this.add(spResult, new GridBagConstraints(0, 2,
                 3, 1, 0.1, 1.0,
@@ -64,7 +65,7 @@ class UITabWords extends JPanel {
         sLength = new JSpinner(new SpinnerNumberModel(
                 maxLetters, 2, 24, 1));
         sLength.setFont(new Font("Arial", Font.PLAIN, 16));
-        sLength.addChangeListener(new ChListener()); // слушатель на изменение
+        sLength.addChangeListener(new ChangeL()); // слушатель на изменение
         this.add(sLength, new GridBagConstraints(1, 3,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -82,7 +83,7 @@ class UITabWords extends JPanel {
      * Метод устанавливает фокус в текствое поле ввода
      */
     void tfWordFocus() {
-        tfWord.requestFocus();
+        tfLetters.requestFocus();
     }
 
     /**
@@ -102,16 +103,16 @@ class UITabWords extends JPanel {
     private void hunting() {
         WordsHunter wordsHunter = new WordsHunter(UIGeneral.getRepository());
         String result = wordsHunter.getSubWords(maxLetters,
-                tfWord.getText().toLowerCase());
+                tfLetters.getText().toLowerCase());
         tpResult.setText(result);
         tpResult.setCaretPosition(0);
     }
 
     /**
-     * Внутренний класс - слушатель клика кнопки
-     * и нажатия <ENTER> в текстовом поле
+     * Внутренний класс - слушатель клика кнопки "Поиск слов"
+     * и нажатия <ENTER> в текстовом поле tfLetters
      */
-    class AListener implements ActionListener {
+    class ActionL implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             hunting();
         }
@@ -119,9 +120,9 @@ class UITabWords extends JPanel {
 
     /**
      * Внутренний класс - слушатель изменения
-     * минимальной длины искомых слов
+     * минимальной длины искомых слов в спиннере sLength
      */
-    class ChListener implements ChangeListener {
+    class ChangeL implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             maxLetters = (int) sLength.getValue();
             lLetters.setText(mimicry(maxLetters));

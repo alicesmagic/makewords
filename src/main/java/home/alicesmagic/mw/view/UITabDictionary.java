@@ -1,32 +1,39 @@
 package home.alicesmagic.mw.view;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.List;
 
 class UITabDictionary extends JPanel {
-    private JTextField tfSearch;
+    private JTextField tfWord;
+    private JButton bAdd;
     private JTextPane tpDictionary;
+    private JLabel lNumber;
+    private int number = UIGeneral.getRepository().getAll().size();
     private JProgressBar pBar;
     private JButton bShow;
 
     UITabDictionary() {
         this.setLayout(new GridBagLayout());
 
-        tfSearch = new JTextField(15);
-        tfSearch.setFont(new Font("Arial", Font.PLAIN, 20));
-        tfSearch.setHorizontalAlignment(JTextField.CENTER);
+        tfWord = new JTextField(15);
+        tfWord.setFont(new Font("Arial", Font.PLAIN, 20));
+        tfWord.setHorizontalAlignment(JTextField.CENTER);
         // Слушатель на ввод символов
-        tfSearch.getDocument().addDocumentListener(new UIGeneral.DocListener());
-        this.add(tfSearch, new GridBagConstraints(0, 0,
+        tfWord.getDocument().addDocumentListener(new UIGeneral.DocListener());
+        // Слушатель нажатия клавиш
+        tfWord.addKeyListener(new KeyL());
+        this.add(tfWord, new GridBagConstraints(0, 0,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
 
-        JButton bAdd = new JButton("Добавить в словарь");
+        bAdd = new JButton("Добавить слово");
         bAdd.setFont(new Font("Arial", Font.PLAIN, 18));
+        bAdd.addActionListener(new AddListener()); // слушатель на клик
         this.add(bAdd, new GridBagConstraints(0, 1,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -37,16 +44,16 @@ class UITabDictionary extends JPanel {
         StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         tpDictionary.setFont(new Font("Arial", Font.PLAIN, 20));
+        tpDictionary.setEditable(false);
         JScrollPane spDictionary = new JScrollPane(tpDictionary);
         this.add(spDictionary, new GridBagConstraints(0, 2,
                 1, 1, 0.1, 1.0,
                 10, 1, UIGeneral.ins, 0, 0));
 
-        JLabel lQuantity = new JLabel("Количество слов в словаре: "
-                + UIGeneral.getRepository().getAll().size());
-        lQuantity.setFont(new Font("Arial", Font.PLAIN, 16));
-        lQuantity.setHorizontalAlignment(JTextField.CENTER);
-        this.add(lQuantity, new GridBagConstraints(0, 3,
+        lNumber = new JLabel("Количество слов в словаре: " + number);
+        lNumber.setFont(new Font("Arial", Font.PLAIN, 16));
+        lNumber.setHorizontalAlignment(JTextField.CENTER);
+        this.add(lNumber, new GridBagConstraints(0, 3,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
 
@@ -71,7 +78,46 @@ class UITabDictionary extends JPanel {
      * Метод, устанавливающий фокус в текствое поле ввода
      */
     void tfSearchFocus() {
-        tfSearch.requestFocus();
+        tfWord.requestFocus();
+    }
+
+    /**
+     * Внутренний класс - слушатель изменений в текстовом поле tfWord
+     */
+    class KeyL extends KeyAdapter {
+        @Override
+        public void keyReleased(KeyEvent e) {
+            bAdd.setText("Добавить слово");
+            String s = tpDictionary.getText();
+            String w = UIGeneral.getRepository().findBySub(
+                    tfWord.getText().toLowerCase());
+            if (w != null) {
+                int pos = s.indexOf("\n" + w + "\n") + 1;
+                tpDictionary.setCaretPosition(pos);
+            }
+        }
+    }
+
+    /**
+     * Внутренний класс - слушатель клика кнопки "Добавить слово"
+     */
+    class AddListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String s = tfWord.getText().toLowerCase();
+            if (!UIGeneral.getRepository().getAll().contains(s)) {
+                UIGeneral.getRepository().addWord(s);
+                UIGeneral.getRepository().saveDictionary();
+                if (s.length() < 13) {
+                    bAdd.setText("Добавлено слово '" + s + "'");
+                } else {
+                    bAdd.setText("Слово добавлено");
+                }
+                number++;
+                lNumber.setText("Количество слов в словаре: " + number);
+            } else {
+                bAdd.setText("Такое слово уже есть");
+            }
+        }
     }
 
     /**
@@ -81,7 +127,7 @@ class UITabDictionary extends JPanel {
         public void actionPerformed(ActionEvent e) {
             if (bShow.getText().equals("Показать весь словарь")) {
                 bShow.setText("Словарь загружается...");
-                new LoadThread().execute();
+                new LoadsThread().execute();
             }
         }
     }
@@ -89,7 +135,7 @@ class UITabDictionary extends JPanel {
     /**
      * Класс - наследник SwingWorker для загрузки словаря в текстовую панель
      */
-    class LoadThread extends SwingWorker<String, Integer> {
+    class LoadsThread extends SwingWorker<String, Integer> {
         // Формирование строки для последующего ее вывода в текстовую панель
         // Выполняется в отдельном потоке
         @Override
@@ -113,7 +159,7 @@ class UITabDictionary extends JPanel {
         }
 
         // Отражение процесса загрузки в прогресс-баре
-        // в потоке диспетчеризации событий
+        // Выполняется в потоке диспетчеризации событий
         @Override
         public void process(List<Integer> chunks) {
             for (Integer chunk : chunks) {
@@ -123,7 +169,7 @@ class UITabDictionary extends JPanel {
         }
 
         // Вывод итоговой строки в текстовую панель
-        // в потоке диспетчеризации событий
+        // Выполняется в потоке диспетчеризации событий
         @Override
         public void done() {
             try {
