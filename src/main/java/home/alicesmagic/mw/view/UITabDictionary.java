@@ -1,8 +1,6 @@
 package home.alicesmagic.mw.view;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -16,6 +14,10 @@ class UITabDictionary extends JPanel {
     private int number = UIGeneral.getRepository().getAll().size();
     private JProgressBar pBar;
     private JButton bShow;
+    private SimpleAttributeSet selectOld;
+    private SimpleAttributeSet selectNew;
+    private int positionSelected = 0;
+    private int lengthSelected = 0;
 
     UITabDictionary() {
         this.setLayout(new GridBagLayout());
@@ -72,6 +74,14 @@ class UITabDictionary extends JPanel {
         this.add(bShow, new GridBagConstraints(0, 5,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
+
+        selectOld = new SimpleAttributeSet();
+        StyleConstants.setFontSize(selectOld, 20);
+        StyleConstants.setForeground(selectOld, Color.lightGray);
+
+        selectNew = new SimpleAttributeSet();
+        StyleConstants.setFontSize(selectNew, 25);
+        StyleConstants.setForeground(selectNew, Color.white);
     }
 
     /**
@@ -88,12 +98,17 @@ class UITabDictionary extends JPanel {
         @Override
         public void keyReleased(KeyEvent e) {
             bAdd.setText("Добавить слово");
+            tpDictionary.getStyledDocument().setCharacterAttributes(
+                    positionSelected, lengthSelected, selectOld, false);
             String s = tpDictionary.getText();
             String w = UIGeneral.getRepository().findBySub(
                     tfWord.getText().toLowerCase());
             if (w != null) {
-                int pos = s.indexOf("\n" + w + "\n") + 1;
-                tpDictionary.setCaretPosition(pos);
+                positionSelected = s.indexOf("\n" + w + "\n") + 1;
+                lengthSelected = w.length();
+                tpDictionary.setCaretPosition(positionSelected);
+                tpDictionary.getStyledDocument().setCharacterAttributes(
+                        positionSelected, lengthSelected, selectNew, false);
             }
         }
     }
