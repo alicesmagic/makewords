@@ -19,37 +19,7 @@ public class UIGeneral extends JFrame {
     /////////////  НЕЗАВИСИМО ОТ РАСКЛАДКИ КЛАВИАТУРЫ  //////////////////
     private static IndexesLangInput indexes;
     static { indexes = new IndexesLangInput(); }
-    //////////////////////////  КОНЕЦ БЛОКА  ////////////////////////////
 
-    public UIGeneral() {
-        super("Subworder");
-        this.setResizable(false);
-        this.setSize(320, 600);
-        this.setLocationRelativeTo(null);
-//        this.setLocation(1000,150); // для удобства отладки
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        DataStorage dataStorage = new DataStorage("rus");
-        repository = new WordsRepository(dataStorage);
-
-        JTabbedPane tp = new JTabbedPane(JTabbedPane.BOTTOM);
-        tp.setFont(new Font("Arial", Font.PLAIN, 18));
-        UITabWords tabWords = new UITabWords();
-        tp.addTab("Поиск слов", tabWords);
-        UITabDictionary tabDictionary = new UITabDictionary();
-        tp.addTab("Словарь", tabDictionary);
-        this.add(tp);
-        this.setVisible(true);
-        tabDictionary.tfSearchFocus();
-        tabWords.tfWordFocus();
-    }
-
-    static WordsRepository getRepository() {
-        return repository;
-    }
-
-    /////////  БЛОК ОРГАНИЦАЦИИ РУССКОГО ТЕКСТА В ПОЛЕ ВВОДА,  //////////
-    /////////////  НЕЗАВИСИМО ОТ РАСКЛАДКИ КЛАВИАТУРЫ  //////////////////
     /**
      * Внутренний класс - слушатель изменений в тексте
      * текстового поля.
@@ -64,9 +34,7 @@ public class UIGeneral extends JFrame {
         }
 
         @Override
-        public void removeUpdate(DocumentEvent e) {
-
-        }
+        public void removeUpdate(DocumentEvent e) {}
 
         @Override
         public void changedUpdate(DocumentEvent e) {
@@ -97,14 +65,14 @@ public class UIGeneral extends JFrame {
         char[] temp = e.getDocument().getText(e.getOffset(), e.getLength())
                 .toCharArray();
         int tempIndex;
-
-        for (int i = 0; i < temp.length; i++)
+        for (int i = 0; i < temp.length; i++) {
             for (Alphabet alphabet : Alphabet.values()) {
                 if ((tempIndex = alphabet.type.indexOf(temp[i])) != -1) {
                     temp[i] = Alphabet.CORE.charAt(tempIndex);
                     break;
                 }
             }
+        }
         if (!indexes.isEqual(e.getOffset(), e.getLength(), new String(temp))) {
             SwingUtilities.invokeLater(() -> {
                 try {
@@ -115,4 +83,31 @@ public class UIGeneral extends JFrame {
         }
     }
     //////////////////////////  КОНЕЦ БЛОКА  ////////////////////////////
+
+    public UIGeneral() {
+        super("Subworder");
+        this.setResizable(false);
+        this.setSize(320, 600);
+        this.setLocationRelativeTo(null);
+//        this.setLocation(1000,150); // для удобства отладки
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        DataStorage dataStorage = new DataStorage("rus");
+        repository = new WordsRepository(dataStorage);
+
+        JTabbedPane tp = new JTabbedPane(JTabbedPane.BOTTOM);
+        tp.setFont(new Font("Arial", Font.PLAIN, 18));
+        UITabWords tabWords = new UITabWords();
+        tp.addTab("Поиск слов", tabWords);
+        UITabDictionary tabDictionary = new UITabDictionary();
+        tp.addTab("Словарь", tabDictionary);
+        this.add(tp);
+        this.setVisible(true);
+        tabDictionary.tfFocus();
+        tabWords.tfLettersFocus();
+    }
+
+    static WordsRepository getRepository() {
+        return repository;
+    }
 }

@@ -7,11 +7,11 @@ import java.awt.event.*;
 import java.util.List;
 
 class UITabDictionary extends JPanel {
+    private int number = UIGeneral.getRepository().getAll().size();
     private JTextField tfWord;
     private JButton bAdd;
     private JTextPane tpDictionary;
     private JLabel lNumber;
-    private int number = UIGeneral.getRepository().getAll().size();
     private JProgressBar pBar;
     private JButton bShow;
     private SimpleAttributeSet selectOld;
@@ -28,7 +28,7 @@ class UITabDictionary extends JPanel {
         // Слушатель на ввод символов
         tfWord.getDocument().addDocumentListener(new UIGeneral.DocListener());
         // Слушатель нажатия клавиш
-        tfWord.addKeyListener(new KeyL());
+        tfWord.addKeyListener(new KeyWordL());
         this.add(tfWord, new GridBagConstraints(0, 0,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -75,10 +75,10 @@ class UITabDictionary extends JPanel {
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
 
+        // Установка атрибутов для выделения найденных слов
         selectOld = new SimpleAttributeSet();
         StyleConstants.setFontSize(selectOld, 20);
         StyleConstants.setForeground(selectOld, Color.lightGray);
-
         selectNew = new SimpleAttributeSet();
         StyleConstants.setFontSize(selectNew, 25);
         StyleConstants.setForeground(selectNew, Color.white);
@@ -87,14 +87,14 @@ class UITabDictionary extends JPanel {
     /**
      * Метод, устанавливающий фокус в текствое поле ввода
      */
-    void tfSearchFocus() {
+    void tfFocus() {
         tfWord.requestFocus();
     }
 
     /**
      * Внутренний класс - слушатель изменений в текстовом поле tfWord
      */
-    class KeyL extends KeyAdapter {
+    class KeyWordL extends KeyAdapter {
         @Override
         public void keyReleased(KeyEvent e) {
             bAdd.setText("Добавить слово");
@@ -195,6 +195,7 @@ class UITabDictionary extends JPanel {
             tpDictionary.setCaretPosition(0);
             pBar.setValue(100);
             bShow.setText("Словарь загружен");
+            tfWord.requestFocus();
         }
     }
 }

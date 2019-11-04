@@ -9,11 +9,15 @@ public class IndexesLangInput {
     private int lastOffset;
     private int lastLength;
     private String lastText;
+    private boolean isPair = false;
 
     public boolean isEqual(int lastOffset, int lastLength, String lastText) {
-        boolean result = this.lastOffset == lastOffset &&
+        boolean result = isPair &&
+                this.lastOffset == lastOffset &&
                 this.lastLength == lastLength &&
                 lastText.equals(this.lastText);
+        isPair = !isPair;
+
         if (!result) {
             this.lastOffset = lastOffset;
             this.lastLength = lastLength;

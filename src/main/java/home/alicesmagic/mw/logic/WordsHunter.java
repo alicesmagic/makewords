@@ -10,6 +10,8 @@ public class WordsHunter {
     private static String[] dict;
     private static StringBuilder removeBox = new StringBuilder();
 
+    private int numberWords = 0;
+
     public WordsHunter(WordsRepository repository) {
         dict = getDictAsArray(repository);
     }
@@ -48,6 +50,7 @@ public class WordsHunter {
                         oldLength = wordDict.length();
                     }
                     res.append(wordDict).append("\n");
+                    numberWords++;
                 }
             } else break;
         }
@@ -76,4 +79,9 @@ public class WordsHunter {
         }
         return removeBox.length() == 0;
     }
+
+    public int getNumberWords() {
+        return numberWords;
+    }
+
 }
