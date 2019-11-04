@@ -1,11 +1,12 @@
 package home.alicesmagic.mw.logic;
 
-import java.util.Arrays;
-
+/**
+ * Класс, подставляющий к числительному существительное в правильной форме
+ */
 public class CorrectTermination {
-    private String one;
-    private String three;
-    private String five;
+    private String one; // один стул
+    private String three; // три стулА
+    private String five; // пять стулЬЕВ
 
     public CorrectTermination(String one, String three, String five) {
         this.one = one;

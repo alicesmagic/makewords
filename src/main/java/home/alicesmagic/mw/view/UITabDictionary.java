@@ -123,7 +123,9 @@ class UITabDictionary extends JPanel {
     class AddListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             String s = tfWord.getText().toLowerCase();
-            if (!UIGeneral.getRepository().getAll().contains(s)) {
+            if (UIGeneral.getRepository().getAll().contains(s)) {
+                bAdd.setText("Такое слово уже есть");
+            } else {
                 UIGeneral.getRepository().addWord(s);
                 UIGeneral.getRepository().saveDictionary();
                 if (s.length() < 13) {
@@ -131,11 +133,20 @@ class UITabDictionary extends JPanel {
                 } else {
                     bAdd.setText("Слово добавлено");
                 }
+
                 number++;
                 lNumber.setText("В словаре " + new CorrectTermination(
-                        "слово", "слова", "слов").getNumAndWord(number));
-            } else {
-                bAdd.setText("Такое слово уже есть");
+                        "слово", "слова", "слов")
+                        .getNumAndWord(number));
+
+                try {
+                    tpDictionary.getDocument().insertString(tpDictionary
+                            .getCaretPosition(), s + "\n", null);
+                } catch (BadLocationException ex) {
+                    ex.printStackTrace();
+                }
+                tpDictionary.getStyledDocument().setCharacterAttributes(
+                        positionSelected, s.length(), selectNew, false);
             }
         }
     }
