@@ -14,6 +14,11 @@ public class CorrectTermination {
         this.five = five;
     }
 
+    /**
+     * Метод обеспечивает получение существительного соответствующего числу
+     * @param num - входное число
+     * @return - только слово в правильной форме
+     */
     public String getWord(int num) {
         int[] arr = new int[2];
         arr[1] = num % 10;
@@ -24,6 +29,11 @@ public class CorrectTermination {
         return five;
     }
 
+    /**
+     * Метод обеспечивает получение существительного соответствующего числу
+     * @param num - входное число
+     * @return - само число + слово в правильной форме
+     */
     public String getNumAndWord(int num) {
         return num + " " + getWord(num);
     }

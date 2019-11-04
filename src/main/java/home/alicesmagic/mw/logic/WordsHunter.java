@@ -80,6 +80,10 @@ public class WordsHunter {
         return removeBox.length() == 0;
     }
 
+    /**
+     * Геттер возвращающий количество найденных слов
+     * @return - количество найденных слов
+     */
     public int getNumberWords() {
         return numberWords;
     }

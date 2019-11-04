@@ -21,6 +21,7 @@ class UITabDictionary extends JPanel {
     private int positionSelected = 0;
     private int lengthSelected = 0;
 
+    // Формирование вкладки "Словарь" интерфейса
     UITabDictionary() {
         this.setLayout(new GridBagLayout());
 
@@ -30,14 +31,14 @@ class UITabDictionary extends JPanel {
         // Слушатель на ввод символов
         tfWord.getDocument().addDocumentListener(new UIGeneral.DocListener());
         // Слушатель нажатия клавиш
-        tfWord.addKeyListener(new KeyWordL());
+        tfWord.addKeyListener(new KeyTfWordListener());
         this.add(tfWord, new GridBagConstraints(0, 0,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
 
         bAdd = new JButton("Добавить слово");
         bAdd.setFont(new Font("Arial", Font.PLAIN, 18));
-        bAdd.addActionListener(new AddListener()); // слушатель на клик
+        bAdd.addActionListener(new bAddListener()); // слушатель на клик
         this.add(bAdd, new GridBagConstraints(0, 1,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -96,9 +97,50 @@ class UITabDictionary extends JPanel {
     }
 
     /**
-     * Внутренний класс - слушатель изменений в текстовом поле tfWord
+     * Внутренний класс - слушатель клика кнопки "Добавить слово".
+     * Добавляет и выделяет цветом новое слово в словаре,
+     * корректирует отображаемый размер словаря.
      */
-    class KeyWordL extends KeyAdapter {
+    class bAddListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            // Добавление слова в репозиторий, если его там нет
+            String s = tfWord.getText().toLowerCase();
+            if (UIGeneral.getRepository().getAll().contains(s)) {
+                bAdd.setText("Такое слово уже есть");
+            } else {
+                UIGeneral.getRepository().addWord(s);
+                UIGeneral.getRepository().saveDictionary();
+                if (s.length() < 13) {
+                    bAdd.setText("Добавлено слово '" + s + "'");
+                } else {
+                    bAdd.setText("Слово добавлено");
+                }
+                // Вставка слова в текстовую панель и подсветка этого слова
+                try {
+                    tpDictionary.getDocument().insertString(tpDictionary
+                            .getCaretPosition(), s + "\n", null);
+                } catch (BadLocationException ex) {
+                    ex.printStackTrace();
+                }
+                lengthSelected = s.length();
+                tpDictionary.getStyledDocument().setCharacterAttributes(
+                        positionSelected, lengthSelected, selectNew, false);
+                // Коррекция отображаемого размера словаря
+                number++;
+                lNumber.setText("В словаре " + new CorrectTermination(
+                        "слово", "слова", "слов")
+                        .getNumAndWord(number));
+            }
+        }
+    }
+
+    /**
+     * Внутренний класс - слушатель изменений в текстовом поле tfWord
+     * Возвращает изначальный текст кнопки "Добавить слово". Находит совпадения
+     * в отображаемом словаре и подсвечивает подходящее слово, устанавливая при
+     * этом каретку в нужное положение.
+     */
+    class KeyTfWordListener extends KeyAdapter {
         @Override
         public void keyReleased(KeyEvent e) {
             bAdd.setText("Добавить слово");
@@ -118,41 +160,8 @@ class UITabDictionary extends JPanel {
     }
 
     /**
-     * Внутренний класс - слушатель клика кнопки "Добавить слово"
-     */
-    class AddListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            String s = tfWord.getText().toLowerCase();
-            if (UIGeneral.getRepository().getAll().contains(s)) {
-                bAdd.setText("Такое слово уже есть");
-            } else {
-                UIGeneral.getRepository().addWord(s);
-                UIGeneral.getRepository().saveDictionary();
-                if (s.length() < 13) {
-                    bAdd.setText("Добавлено слово '" + s + "'");
-                } else {
-                    bAdd.setText("Слово добавлено");
-                }
-
-                number++;
-                lNumber.setText("В словаре " + new CorrectTermination(
-                        "слово", "слова", "слов")
-                        .getNumAndWord(number));
-
-                try {
-                    tpDictionary.getDocument().insertString(tpDictionary
-                            .getCaretPosition(), s + "\n", null);
-                } catch (BadLocationException ex) {
-                    ex.printStackTrace();
-                }
-                tpDictionary.getStyledDocument().setCharacterAttributes(
-                        positionSelected, s.length(), selectNew, false);
-            }
-        }
-    }
-
-    /**
-     * Внутренний класс - слушатель клика кнопки "Показать весь словарь"
+     * Внутренний класс - слушатель клика кнопки "Показать весь словарь".
+     * Запускает отдельный поток в суб-классе SwingWorker для загрузки словаря.
      */
     class ShowListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
@@ -164,7 +173,8 @@ class UITabDictionary extends JPanel {
     }
 
     /**
-     * Класс - наследник SwingWorker для загрузки словаря в текстовую панель
+     * Суб-класс SwingWorker для загрузки словаря в текстовую панель
+     * в отдельном потоке
      */
     class LoadsThread extends SwingWorker<String, Integer> {
         // Формирование строки для последующего ее вывода в текстовую панель

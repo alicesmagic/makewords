@@ -26,11 +26,11 @@ class UITabWords extends JPanel {
         tfLetters = new JTextField(15);
         tfLetters.setFont(new Font("Arial", Font.PLAIN, 25));
         tfLetters.setHorizontalAlignment(JTextField.CENTER);
-        SearchListener al = new SearchListener();
+        tfLettersBRunListener al = new tfLettersBRunListener();
         tfLetters.addActionListener(al); // слушатель на <ENTER>
         // Слушатель на ввод символов
         tfLetters.getDocument().addDocumentListener(new UIGeneral.DocListener());
-        tfLetters.addKeyListener(new KeySearchL());
+        tfLetters.addKeyListener(new KeyTfLettersListener());
         this.add(tfLetters, new GridBagConstraints(0, 0,
                 3, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -68,7 +68,7 @@ class UITabWords extends JPanel {
         sLength = new JSpinner(new SpinnerNumberModel(
                 maxLetters, 2, 24, 1));
         sLength.setFont(new Font("Arial", Font.PLAIN, 16));
-        sLength.addChangeListener(new ChangeL()); // слушатель на изменение
+        sLength.addChangeListener(new sLengthListener()); // слушатель на изменение
         this.add(sLength, new GridBagConstraints(1, 3,
                 1, 1, 0.1, 0.01,
                 10, 1, UIGeneral.ins, 0, 0));
@@ -91,9 +91,10 @@ class UITabWords extends JPanel {
     }
 
     /**
-     * Внутренний класс - слушатель изменений в текстовом поле tfWord
+     * Внутренний класс - слушатель изменений в текстовом поле tfLetters
+     * Служит только для возврата изначального текста кнопки "Поиск слов"
      */
-    class KeySearchL extends KeyAdapter {
+    class KeyTfLettersListener extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
             bRun.setText("Поиск слов");
@@ -104,7 +105,7 @@ class UITabWords extends JPanel {
      * Метод, обращающийся к логическому блоку с целью получить искомые слова.
      * Получает слова и помещает их в текстовую панель
      */
-    private void hunting() {
+    private void getResult() {
         WordsHunter wordsHunter = new WordsHunter(UIGeneral.getRepository());
         String result = wordsHunter.getSubWords(maxLetters,
                 tfLetters.getText().toLowerCase());
@@ -122,10 +123,11 @@ class UITabWords extends JPanel {
     /**
      * Внутренний класс - слушатель клика кнопки "Поиск слов"
      * и нажатия <ENTER> в текстовом поле tfLetters
+     * Вызвывает метод getResult()
      */
-    class SearchListener implements ActionListener {
+    class tfLettersBRunListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            hunting();
+            getResult();
         }
     }
 
@@ -133,12 +135,12 @@ class UITabWords extends JPanel {
      * Внутренний класс - слушатель изменения
      * минимальной длины искомых слов в спиннере sLength
      */
-    class ChangeL implements ChangeListener {
+    class sLengthListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             maxLetters = (int) sLength.getValue();
             lLetters.setText(new CorrectTermination(
                     "буква", "буквы", "букв").getWord(maxLetters));
-            hunting();
+            getResult();
         }
     }
 }
