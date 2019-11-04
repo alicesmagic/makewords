@@ -1,5 +1,6 @@
 package home.alicesmagic.mw.view;
 
+import home.alicesmagic.mw.logic.CorrectTermination;
 import home.alicesmagic.mw.logic.WordsHunter;
 
 import javax.swing.*;
@@ -73,7 +74,8 @@ class UITabWords extends JPanel {
                 10, 1, UIGeneral.ins, 0, 0));
 
         // Текстовая строка "букв(-а;-ы)"
-        lLetters = new JLabel(mimicry(maxLetters, "letters"));
+        lLetters = new JLabel(new CorrectTermination(
+                "буква", "буквы", "букв").getWord(maxLetters));
         lLetters.setFont(new Font("Arial", Font.PLAIN, 16));
         lLetters.setHorizontalAlignment(JTextField.LEFT);
         this.add(lLetters, new GridBagConstraints(2, 3,
@@ -86,28 +88,6 @@ class UITabWords extends JPanel {
      */
     void tfLettersFocus() {
         tfLetters.requestFocus();
-    }
-
-    /**
-     * Метод устанавливает правильную форму слова
-     * во множественном числе
-     */
-    private String mimicry(int n, String word) {
-        switch (word) {
-            case "letters":
-                if (n > 1 && n < 5 || n > 21 && n < 25) return "буквы";
-                else if (n == 21) return "буква ";
-                return "букв   ";
-            case "words":
-                int[] arr = new int[2];
-                arr[1] = n % 10;
-                n /= 10;
-                arr[0] = n % 10;
-                if (arr[0] != 1 && arr[1] > 1 && arr[1] < 5) return "слова";
-                else if (arr[1] == 1) return "слово";
-                return "слов";
-            default: return word;
-        }
     }
 
     /**
@@ -130,7 +110,8 @@ class UITabWords extends JPanel {
                 tfLetters.getText().toLowerCase());
         int num = wordsHunter.getNumberWords();
         if (wordsHunter.getNumberWords() > 0) {
-            bRun.setText("Найдено " + num + " " + mimicry(num, "words"));
+            bRun.setText("Найдено " + new CorrectTermination(
+                    "слово", "слова", "слов").getNumAndWord(num));
         } else {
             bRun.setText("Ничего не найдено...");
         }
@@ -155,7 +136,8 @@ class UITabWords extends JPanel {
     class ChangeL implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             maxLetters = (int) sLength.getValue();
-            lLetters.setText(mimicry(maxLetters, "letters"));
+            lLetters.setText(new CorrectTermination(
+                    "буква", "буквы", "букв").getWord(maxLetters));
             hunting();
         }
     }

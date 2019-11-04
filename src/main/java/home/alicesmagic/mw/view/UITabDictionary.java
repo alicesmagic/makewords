@@ -1,5 +1,7 @@
 package home.alicesmagic.mw.view;
 
+import home.alicesmagic.mw.logic.CorrectTermination;
+
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
@@ -52,7 +54,9 @@ class UITabDictionary extends JPanel {
                 1, 1, 0.1, 1.0,
                 10, 1, UIGeneral.ins, 0, 0));
 
-        lNumber = new JLabel("Количество слов в словаре: " + number);
+        lNumber = new JLabel("В словаре " + new CorrectTermination(
+                "слово", "слова", "слов").getNumAndWord(number));
+
         lNumber.setFont(new Font("Arial", Font.PLAIN, 16));
         lNumber.setHorizontalAlignment(JTextField.CENTER);
         this.add(lNumber, new GridBagConstraints(0, 3,
@@ -128,7 +132,8 @@ class UITabDictionary extends JPanel {
                     bAdd.setText("Слово добавлено");
                 }
                 number++;
-                lNumber.setText("Количество слов в словаре: " + number);
+                lNumber.setText("В словаре " + new CorrectTermination(
+                        "слово", "слова", "слов").getNumAndWord(number));
             } else {
                 bAdd.setText("Такое слово уже есть");
             }
