@@ -25,7 +25,8 @@ public class DataStorage implements IDataStorage {
      */
     @Override
     public void save(TreeSet<String> words) {
-        try (PrintWriter pw = new PrintWriter(fileName)) {
+        try (PrintWriter pw = new PrintWriter(fileName,
+                StandardCharsets.UTF_8)) {
             for  (String w : words) {
                 pw.println(w);
             }

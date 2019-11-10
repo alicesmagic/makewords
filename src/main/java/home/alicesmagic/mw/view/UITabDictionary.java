@@ -1,6 +1,7 @@
 package home.alicesmagic.mw.view;
 
 import home.alicesmagic.mw.logic.CorrectTermination;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -23,8 +24,9 @@ class UITabDictionary extends JPanel {
 
     // Формирование вкладки "Словарь" интерфейса
     UITabDictionary() {
-        this.setLayout(new GridBagLayout());
+        this.setLayout(new MigLayout());
 
+        // Текстовое поле для ввода искомого слова в словаре
         tfWord = new JTextField(15);
         tfWord.setFont(new Font("Arial", Font.PLAIN, 20));
         tfWord.setHorizontalAlignment(JTextField.CENTER);
@@ -32,17 +34,15 @@ class UITabDictionary extends JPanel {
         tfWord.getDocument().addDocumentListener(new UIGeneral.DocListener());
         // Слушатель нажатия клавиш
         tfWord.addKeyListener(new KeyTfWordListener());
-        this.add(tfWord, new GridBagConstraints(0, 0,
-                1, 1, 0.1, 0.01,
-                10, 1, UIGeneral.ins, 0, 0));
+        this.add(tfWord, "span, growx");
 
+        // Кнопка добавления набранного слова в словарь
         bAdd = new JButton("Добавить слово");
         bAdd.setFont(new Font("Arial", Font.PLAIN, 18));
         bAdd.addActionListener(new bAddListener()); // слушатель на клик
-        this.add(bAdd, new GridBagConstraints(0, 1,
-                1, 1, 0.1, 0.01,
-                10, 1, UIGeneral.ins, 0, 0));
+        this.add(bAdd, "span, growx");
 
+        // Текстовая панель словаря
         tpDictionary = new JTextPane();
         StyledDocument doc = tpDictionary.getStyledDocument();
         SimpleAttributeSet center = new SimpleAttributeSet();
@@ -51,34 +51,28 @@ class UITabDictionary extends JPanel {
         tpDictionary.setFont(new Font("Arial", Font.PLAIN, 20));
         tpDictionary.setEditable(false);
         JScrollPane spDictionary = new JScrollPane(tpDictionary);
-        this.add(spDictionary, new GridBagConstraints(0, 2,
-                1, 1, 0.1, 1.0,
-                10, 1, UIGeneral.ins, 0, 0));
+        this.add(spDictionary, "span, push, grow");
 
+        // Декларация количества слов в словаре
         lNumber = new JLabel("В словаре " + new CorrectTermination(
                 "слово", "слова", "слов").getNumAndWord(number));
-
         lNumber.setFont(new Font("Arial", Font.PLAIN, 16));
         lNumber.setHorizontalAlignment(JTextField.CENTER);
-        this.add(lNumber, new GridBagConstraints(0, 3,
-                1, 1, 0.1, 0.01,
-                10, 1, UIGeneral.ins, 0, 0));
+        this.add(lNumber, "span, growx");
 
+        // Прогресс-бар загрузки словаря
         pBar = new JProgressBar();
         pBar.setStringPainted(true);
         pBar.setMinimum(0);
         pBar.setMaximum(100);
         pBar.setFont(new Font("Arial", Font.PLAIN, 14));
-        this.add(pBar, new GridBagConstraints(0, 4,
-                1, 1, 0.1, 0.01,
-                10, 1, UIGeneral.ins, 0, 0));
+        this.add(pBar, "span, growx");
 
+        // Кнопка загрузки словаря в текстовую панель
         bShow = new JButton("Показать весь словарь");
         bShow.setFont(new Font("Arial", Font.PLAIN, 18));
         bShow.addActionListener(new ShowListener()); // слушатель на клик
-        this.add(bShow, new GridBagConstraints(0, 5,
-                1, 1, 0.1, 0.01,
-                10, 1, UIGeneral.ins, 0, 0));
+        this.add(bShow, "span, growx");
 
         // Установка атрибутов для выделения найденных слов
         selectOld = new SimpleAttributeSet();

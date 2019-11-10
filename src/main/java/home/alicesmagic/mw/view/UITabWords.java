@@ -2,6 +2,7 @@ package home.alicesmagic.mw.view;
 
 import home.alicesmagic.mw.logic.CorrectTermination;
 import home.alicesmagic.mw.logic.WordsHunter;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -20,10 +21,10 @@ class UITabWords extends JPanel {
 
     // Формирование вкладки "Поиск слов" интерфейса
     UITabWords() {
-        this.setLayout(new GridBagLayout());
+        this.setLayout(new MigLayout());
 
-        // Текстовое поле для ввода набора исходных символов
-        tfLetters = new JTextField(15);
+        // Текстовое поле для ввода исходных символов
+        tfLetters = new JTextField(10);
         tfLetters.setFont(new Font("Arial", Font.PLAIN, 25));
         tfLetters.setHorizontalAlignment(JTextField.CENTER);
         tfLettersBRunListener al = new tfLettersBRunListener();
@@ -31,17 +32,13 @@ class UITabWords extends JPanel {
         // Слушатель на ввод символов
         tfLetters.getDocument().addDocumentListener(new UIGeneral.DocListener());
         tfLetters.addKeyListener(new KeyTfLettersListener());
-        this.add(tfLetters, new GridBagConstraints(0, 0,
-                3, 1, 0.1, 0.01,
-                10, 1, UIGeneral.ins, 0, 0));
+        this.add(tfLetters, "span, growx");
 
         // Кнопка выполнения поиска слов
         bRun = new JButton("Поиск слов");
         bRun.setFont(new Font("Arial", Font.PLAIN, 18));
         bRun.addActionListener(al); // слушатель на клик
-        this.add(bRun, new GridBagConstraints(0, 1,
-                3, 1, 0.1, 0.01,
-                10, 1, UIGeneral.ins, 0, 0));
+        this.add(bRun, "span, growx");
 
         // Текстовая панель для вывода результата поиска
         tpResult = new JTextPane();
@@ -52,35 +49,28 @@ class UITabWords extends JPanel {
         tpResult.setFont(new Font("Arial", Font.PLAIN, 20));
         tpResult.setEditable(false);
         JScrollPane spResult = new JScrollPane(tpResult);
-        this.add(spResult, new GridBagConstraints(0, 2,
-                3, 1, 0.1, 1.0,
-                10, 1, UIGeneral.ins, 0, 0));
+        this.add(spResult, "span, push, grow");
 
         // Текстовая строка "Длина слов - минимум"
         JLabel lMinLength = new JLabel("Длина слов - минимум");
         lMinLength.setFont(new Font("Arial", Font.PLAIN, 16));
         lMinLength.setHorizontalAlignment(JTextField.RIGHT);
-        this.add(lMinLength, new GridBagConstraints(0, 3,
-                1, 1, 0.9, 0.01,
-                10, 1, UIGeneral.ins, 0, 0));
+        this.add(lMinLength, "gapleft 10, split 3");
 
         // Спинер для установки минимальной длины искомых слов
         sLength = new JSpinner(new SpinnerNumberModel(
                 maxLetters, 2, 24, 1));
         sLength.setFont(new Font("Arial", Font.PLAIN, 16));
         sLength.addChangeListener(new sLengthListener()); // слушатель на изменение
-        this.add(sLength, new GridBagConstraints(1, 3,
-                1, 1, 0.1, 0.01,
-                10, 1, UIGeneral.ins, 0, 0));
+        this.add(sLength);
 
         // Текстовая строка "букв(-а;-ы)"
         lLetters = new JLabel(new CorrectTermination(
                 "буква", "буквы", "букв").getWord(maxLetters));
         lLetters.setFont(new Font("Arial", Font.PLAIN, 16));
         lLetters.setHorizontalAlignment(JTextField.LEFT);
-        this.add(lLetters, new GridBagConstraints(2, 3,
-                1, 1, 0.4, 0.01,
-                10, 1, UIGeneral.ins, 0, 0));
+        this.add(lLetters);
+
     }
 
     /**
