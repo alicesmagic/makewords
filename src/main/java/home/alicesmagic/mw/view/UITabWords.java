@@ -24,7 +24,12 @@ class UITabWords extends JPanel {
         this.setLayout(new MigLayout());
 
         // Текстовое поле для ввода исходных символов
-        tfLetters = new JTextField(10);
+        tfLetters = new JTextField(10) {
+            @Override
+            public Point getToolTipLocation(MouseEvent e) {
+                return new Point(16, 50);
+            }
+        };
         tfLetters.setFont(new Font("Arial", Font.PLAIN, 25));
         tfLetters.setHorizontalAlignment(JTextField.CENTER);
         tfLettersBRunListener al = new tfLettersBRunListener();
@@ -32,12 +37,28 @@ class UITabWords extends JPanel {
         // Слушатель на ввод символов
         tfLetters.getDocument().addDocumentListener(new UIGeneral.DocListener());
         tfLetters.addKeyListener(new KeyTfLettersListener());
+        tfLetters.setToolTipText(
+                "<html><center>Это поле предназначено для ввода букв, из<br>" +
+                        "которых будут построены слова русского языка.<br>" +
+                        "Не забывайте про гласные буквы.<br>" +
+                        "Можно просто ввести любое длинное слово.<br>" +
+                        "Например: 'велосипедистка'");
         this.add(tfLetters, "span, growx");
 
         // Кнопка выполнения поиска слов
-        bRun = new JButton("Поиск слов");
+        bRun = new JButton("Поиск слов") {
+            @Override
+            public Point getToolTipLocation(MouseEvent e) {
+                return new Point(19, 35);
+            }
+        };
         bRun.setFont(new Font("Arial", Font.PLAIN, 18));
         bRun.addActionListener(al); // слушатель на клик
+        bRun.setToolTipText(
+                "<html><center>Эта кнопка запустит процесс поиска слов,<br>" +
+                        "полностью состоящих из введенных вами букв.<br>" +
+                        "Чем больше букв введено, тем больше слов<br>" +
+                        "будет найдено.");
         this.add(bRun, "span, growx");
 
         // Текстовая панель для вывода результата поиска
@@ -51,26 +72,51 @@ class UITabWords extends JPanel {
         JScrollPane spResult = new JScrollPane(tpResult);
         this.add(spResult, "span, push, grow");
 
+        // Всплывающая подсказка для следующих трех элементов
+        String toolTipText =
+                "<html><center>Установите требуемую минимальную длину<br>" +
+                "искомых слов. Слова состоящие из меньшего<br>" +
+                "количества букв не попадут в результат поиска.<br>" +
+                "Устанавливать длину можно как перед поиском,<br>" +
+                "так и после него.";
+
         // Текстовая строка "Длина слов - минимум"
-        JLabel lMinLength = new JLabel("Длина слов - минимум");
+        JLabel lMinLength = new JLabel("Длина слов - минимум") {
+            @Override
+            public Point getToolTipLocation(MouseEvent e) {
+                return new Point(5, -90);
+            }
+        };
         lMinLength.setFont(new Font("Arial", Font.PLAIN, 16));
         lMinLength.setHorizontalAlignment(JTextField.RIGHT);
+        lMinLength.setToolTipText(toolTipText);
         this.add(lMinLength, "gapleft 10, split 3");
 
         // Спинер для установки минимальной длины искомых слов
         sLength = new JSpinner(new SpinnerNumberModel(
-                maxLetters, 2, 24, 1));
+                maxLetters, 2, 24, 1)) {
+            @Override
+            public Point getToolTipLocation(MouseEvent e) {
+                return new Point(-161, -86);
+            }
+        };
         sLength.setFont(new Font("Arial", Font.PLAIN, 16));
         sLength.addChangeListener(new sLengthListener()); // слушатель на изменение
+        sLength.setToolTipText(toolTipText);
         this.add(sLength);
 
         // Текстовая строка "букв(-а;-ы)"
         lLetters = new JLabel(new CorrectTermination(
-                "буква", "буквы", "букв").getWord(maxLetters));
+                "буква", "буквы", "букв").getWord(maxLetters)) {
+            @Override
+            public Point getToolTipLocation(MouseEvent e) {
+                return new Point(-228, -90);
+            }
+        };
         lLetters.setFont(new Font("Arial", Font.PLAIN, 16));
         lLetters.setHorizontalAlignment(JTextField.LEFT);
+        lLetters.setToolTipText(toolTipText);
         this.add(lLetters);
-
     }
 
     /**

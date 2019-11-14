@@ -13,8 +13,6 @@ import java.awt.*;
 public class UIGeneral extends JFrame {
     private static WordsRepository repository;
 
-    static final Insets ins = new Insets(3, 3, 3, 3);
-
     /////////  БЛОК ОРГАНИЦАЦИИ РУССКОГО ТЕКСТА В ПОЛЕ ВВОДА,  //////////
     /////////////  НЕЗАВИСИМО ОТ РАСКЛАДКИ КЛАВИАТУРЫ  //////////////////
     private static IndexesLangInput indexes;
@@ -106,6 +104,9 @@ public class UIGeneral extends JFrame {
         this.setVisible(true);
         tabDictionary.tfFocus();
         tabWords.tfLettersFocus();
+
+        ToolTipManager ttm = ToolTipManager.sharedInstance();
+        ttm.setDismissDelay(8000);
     }
 
     static WordsRepository getRepository() {

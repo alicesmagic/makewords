@@ -27,19 +27,39 @@ class UITabDictionary extends JPanel {
         this.setLayout(new MigLayout());
 
         // Текстовое поле для ввода искомого слова в словаре
-        tfWord = new JTextField(15);
+        tfWord = new JTextField(15) {
+            @Override
+            public Point getToolTipLocation(MouseEvent e) {
+                return new Point(1, 40);
+            }
+        };
         tfWord.setFont(new Font("Arial", Font.PLAIN, 20));
         tfWord.setHorizontalAlignment(JTextField.CENTER);
         // Слушатель на ввод символов
         tfWord.getDocument().addDocumentListener(new UIGeneral.DocListener());
         // Слушатель нажатия клавиш
         tfWord.addKeyListener(new KeyTfWordListener());
+        tfWord.setToolTipText(
+                "<html><center>При вводе символов в это поле, будет осуществляться<br>" +
+                        "поиск подходящего слова в словаре. Если ваше слово<br>" +
+                        "в словаре отсутствует, вы сможете его добавить,<br>" +
+                        "нажав кнопку 'Добавить слово'");
         this.add(tfWord, "span, growx");
 
         // Кнопка добавления набранного слова в словарь
-        bAdd = new JButton("Добавить слово");
+        bAdd = new JButton("Добавить слово") {
+            @Override
+            public Point getToolTipLocation(MouseEvent e) {
+                return new Point(5, 35);
+            }
+        };
         bAdd.setFont(new Font("Arial", Font.PLAIN, 18));
         bAdd.addActionListener(new bAddListener()); // слушатель на клик
+        bAdd.setToolTipText(
+                "<html><center>Эта кнопка поможет вам добавить слово в словарь,<br>" +
+                        "только если это слово в словаре отсутствует.<br>" +
+                        "Пожалуйста, добавляйте слово, будучи абсолютно<br>" +
+                        "уверенным в правильности его написания.");
         this.add(bAdd, "span, growx");
 
         // Текстовая панель словаря
@@ -69,9 +89,19 @@ class UITabDictionary extends JPanel {
         this.add(pBar, "span, growx");
 
         // Кнопка загрузки словаря в текстовую панель
-        bShow = new JButton("Показать весь словарь");
+        bShow = new JButton("Показать весь словарь") {
+            @Override
+            public Point getToolTipLocation(MouseEvent e) {
+                return new Point(15, -68);
+            }
+        };
         bShow.setFont(new Font("Arial", Font.PLAIN, 18));
         bShow.addActionListener(new ShowListener()); // слушатель на клик
+        bShow.setToolTipText(
+                "<html><center>Словарь загружен в скрытом режиме.<br>" +
+                "Чтобы его увидеть, нужно нажать на эту кнопку.<br>" +
+                "Загрузка займет определенное время.<br>" +
+                "Придется немного подождать.");
         this.add(bShow, "span, growx");
 
         // Установка атрибутов для выделения найденных слов
@@ -99,6 +129,7 @@ class UITabDictionary extends JPanel {
         public void actionPerformed(ActionEvent e) {
             // Добавление слова в репозиторий, если его там нет
             String s = tfWord.getText().toLowerCase();
+            if (s.isEmpty()) return;
             if (UIGeneral.getRepository().getAll().contains(s)) {
                 bAdd.setText("Такое слово уже есть");
             } else {
@@ -214,7 +245,9 @@ class UITabDictionary extends JPanel {
             }
             tpDictionary.setCaretPosition(0);
             pBar.setValue(100);
-            bShow.setText("Словарь загружен");
+            bShow.setText("Словарь показан");
+            bShow.setEnabled(false);
+            pBar.setEnabled(false);
             tfWord.requestFocus();
         }
     }
