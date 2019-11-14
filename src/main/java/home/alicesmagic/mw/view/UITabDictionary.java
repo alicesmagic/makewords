@@ -25,6 +25,7 @@ class UITabDictionary extends JPanel {
     // Формирование вкладки "Словарь" интерфейса
     UITabDictionary() {
         this.setLayout(new MigLayout());
+        ToolTips toolTips = new ToolTips();
 
         // Текстовое поле для ввода искомого слова в словаре
         tfWord = new JTextField(15) {
@@ -39,11 +40,7 @@ class UITabDictionary extends JPanel {
         tfWord.getDocument().addDocumentListener(new UIGeneral.DocListener());
         // Слушатель нажатия клавиш
         tfWord.addKeyListener(new KeyTfWordListener());
-        tfWord.setToolTipText(
-                "<html><center>При вводе символов в это поле, будет осуществляться<br>" +
-                        "поиск подходящего слова в словаре. Если ваше слово<br>" +
-                        "в словаре отсутствует, вы сможете его добавить,<br>" +
-                        "нажав кнопку 'Добавить слово'");
+        tfWord.setToolTipText(toolTips.forTfWord);
         this.add(tfWord, "span, growx");
 
         // Кнопка добавления набранного слова в словарь
@@ -55,11 +52,7 @@ class UITabDictionary extends JPanel {
         };
         bAdd.setFont(new Font("Arial", Font.PLAIN, 18));
         bAdd.addActionListener(new bAddListener()); // слушатель на клик
-        bAdd.setToolTipText(
-                "<html><center>Эта кнопка поможет вам добавить слово в словарь,<br>" +
-                        "только если это слово в словаре отсутствует.<br>" +
-                        "Пожалуйста, добавляйте слово, будучи абсолютно<br>" +
-                        "уверенным в правильности его написания.");
+        bAdd.setToolTipText(toolTips.forBAdd);
         this.add(bAdd, "span, growx");
 
         // Текстовая панель словаря
@@ -97,11 +90,7 @@ class UITabDictionary extends JPanel {
         };
         bShow.setFont(new Font("Arial", Font.PLAIN, 18));
         bShow.addActionListener(new ShowListener()); // слушатель на клик
-        bShow.setToolTipText(
-                "<html><center>Словарь загружен в скрытом режиме.<br>" +
-                "Чтобы его увидеть, нужно нажать на эту кнопку.<br>" +
-                "Загрузка займет определенное время.<br>" +
-                "Придется немного подождать.");
+        bShow.setToolTipText(toolTips.forBShow);
         this.add(bShow, "span, growx");
 
         // Установка атрибутов для выделения найденных слов
