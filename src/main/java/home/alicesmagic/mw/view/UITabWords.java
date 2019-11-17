@@ -22,18 +22,18 @@ class UITabWords extends JPanel {
     private SimpleAttributeSet selectNew;
     private int positionSelected = 0;
     private int lengthSelected = 0;
-    private PopupMenu popupMenu;
+    private PopupMenu pMenu;
 
     // Формирование вкладки "Поиск слов" интерфейса
     UITabWords() {
         this.setLayout(new MigLayout());
         ToolTips toolTips = new ToolTips();
-        popupMenu = new PopupMenu();
-        popupMenu.getGoogle().addActionListener(new SearchListener());
-        popupMenu.getYandex().addActionListener(new SearchListener());
-        popupMenu.getWiki().addActionListener(new SearchListener());
-        popupMenu.getWidi().addActionListener(new SearchListener());
-        popupMenu.getDel().addActionListener(new DelListener());
+        pMenu = new PopupMenu();
+        pMenu.getGoogle().addActionListener(new SearchListener());
+        pMenu.getYandex().addActionListener(new SearchListener());
+        pMenu.getWiki().addActionListener(new SearchListener());
+        pMenu.getWidi().addActionListener(new SearchListener());
+        pMenu.getDel().addActionListener(new DelListener());
 
         // Текстовое поле для ввода исходных символов
         tfLetters = new JTextField(10) {
@@ -72,8 +72,6 @@ class UITabWords extends JPanel {
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         tpResult.setFont(new Font("Arial", Font.PLAIN, 20));
         tpResult.setEditable(false);
-        JPopupMenu popup = popupMenu.getPopupMenu();
-        tpResult.setComponentPopupMenu(popup);
         tpResult.addMouseListener(new ClickListener());
         JScrollPane spResult = new JScrollPane(tpResult);
         this.add(spResult, "span, push, grow");
@@ -154,7 +152,7 @@ class UITabWords extends JPanel {
         tpResult.setCaretPosition(0);
         tpResult.getStyledDocument().setCharacterAttributes(
                 0, result.length(), selectOld, false);
-        popupMenu.setEnabled(false);
+        tpResult.setComponentPopupMenu(null);
     }
 
     /**
@@ -189,27 +187,29 @@ class UITabWords extends JPanel {
     class ClickListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
-            tpResult.getStyledDocument().setCharacterAttributes(
-                    positionSelected, lengthSelected, selectOld, false);
-            popupMenu.setEnabled(false);
             String s = tpResult.getText();
-            if (tpResult.getCaretPosition() <= s.indexOf('\n')) {
-                tpResult.setCaretPosition(0);
-            } else {
-                while (s.charAt(tpResult.getCaretPosition() - 1) != '\n') {
-                    tpResult.setCaretPosition(tpResult.getCaretPosition() - 1);
-                }
-            }
-            positionSelected = tpResult.getCaretPosition();
-            int temp = positionSelected;
-            while (s.charAt(temp) != '\n') {
-                temp++;
-            }
-            lengthSelected = temp - positionSelected;
-            if (s.charAt(positionSelected) != '-') {
+            if (!s.isEmpty()) {
                 tpResult.getStyledDocument().setCharacterAttributes(
-                        positionSelected, lengthSelected, selectNew, false);
-                popupMenu.setEnabled(true);
+                        positionSelected, lengthSelected, selectOld, false);
+                tpResult.setComponentPopupMenu(null);
+                if (tpResult.getCaretPosition() <= s.indexOf('\n')) {
+                    tpResult.setCaretPosition(0);
+                } else {
+                    while (s.charAt(tpResult.getCaretPosition() - 1) != '\n') {
+                        tpResult.setCaretPosition(tpResult.getCaretPosition() - 1);
+                    }
+                }
+                positionSelected = tpResult.getCaretPosition();
+                int temp = positionSelected;
+                while (s.charAt(temp) != '\n') {
+                    temp++;
+                }
+                lengthSelected = temp - positionSelected;
+                if (s.charAt(positionSelected) != '-') {
+                    tpResult.getStyledDocument().setCharacterAttributes(
+                            positionSelected, lengthSelected, selectNew, false);
+                    tpResult.setComponentPopupMenu(pMenu.getPopupMenu());
+                }
             }
         }
     }
@@ -223,14 +223,11 @@ class UITabWords extends JPanel {
         public void actionPerformed(ActionEvent e) {
             String w = tpResult.getText().substring(positionSelected,
                     positionSelected + lengthSelected);
-//            if (w.charAt(0) == '-') {
-//                return;
-//            }
             switch (e.getActionCommand()) {
-                case "Google": popupMenu.searchNet(w, "g"); break;
-                case "Яндекс": popupMenu.searchNet(w, "y"); break;
-                case "Википедия": popupMenu.searchNet(w, "w"); break;
-                case "Викисловарь": popupMenu.searchNet(w, "d"); break;
+                case "Google": pMenu.searchNet(w, "g"); break;
+                case "Яндекс": pMenu.searchNet(w, "y"); break;
+                case "Википедия": pMenu.searchNet(w, "w"); break;
+                case "Викисловарь": pMenu.searchNet(w, "d"); break;
             }
         }
     }
@@ -255,7 +252,7 @@ class UITabWords extends JPanel {
                 }
                 tpResult.getStyledDocument().setCharacterAttributes(
                         positionSelected, lengthSelected, selectOld, false);
-                popupMenu.setEnabled(false);
+                tpResult.setComponentPopupMenu(null);
             }
         }
     }

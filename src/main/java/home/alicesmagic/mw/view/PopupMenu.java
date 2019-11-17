@@ -30,15 +30,6 @@ class PopupMenu extends JPanel {
         popupMenu.addSeparator();
         popupMenu.add(del);
         popupMenu.setBorder(new BevelBorder(BevelBorder.RAISED));
-        this.setEnabled(false);
-    }
-
-    public void setEnabled(boolean b) {
-        google.setEnabled(b);
-        yandex.setEnabled(b);
-        wiki.setEnabled(b);
-        widi.setEnabled(b);
-        del.setEnabled(b);
     }
 
     void searchNet(String word, String searcher) {

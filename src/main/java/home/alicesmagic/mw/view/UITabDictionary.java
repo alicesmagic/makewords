@@ -21,18 +21,18 @@ class UITabDictionary extends JPanel {
     private SimpleAttributeSet selectNew;
     private int positionSelected = 0;
     private int lengthSelected = 0;
-    private PopupMenu popupMenu;
+    private PopupMenu pMenu;
 
     // Формирование вкладки "Словарь" интерфейса
     UITabDictionary() {
         this.setLayout(new MigLayout());
         ToolTips toolTips = new ToolTips();
-        popupMenu = new PopupMenu();
-        popupMenu.getGoogle().addActionListener(new SearchListener());
-        popupMenu.getYandex().addActionListener(new SearchListener());
-        popupMenu.getWiki().addActionListener(new SearchListener());
-        popupMenu.getWidi().addActionListener(new SearchListener());
-        popupMenu.getDel().addActionListener(new DelListener());
+        pMenu = new PopupMenu();
+        pMenu.getGoogle().addActionListener(new SearchListener());
+        pMenu.getYandex().addActionListener(new SearchListener());
+        pMenu.getWiki().addActionListener(new SearchListener());
+        pMenu.getWidi().addActionListener(new SearchListener());
+        pMenu.getDel().addActionListener(new DelListener());
 
         // Текстовое поле для ввода искомого слова в словаре
         tfWord = new JTextField(15) {
@@ -70,8 +70,6 @@ class UITabDictionary extends JPanel {
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         tpDictionary.setFont(new Font("Arial", Font.PLAIN, 20));
         tpDictionary.setEditable(false);
-        JPopupMenu popup = popupMenu.getPopupMenu();
-        tpDictionary.setComponentPopupMenu(popup);
         tpDictionary.addMouseListener(new ClickListener());
         JScrollPane spDictionary = new JScrollPane(tpDictionary);
         this.add(spDictionary, "span, push, grow");
@@ -128,7 +126,7 @@ class UITabDictionary extends JPanel {
         public void actionPerformed(ActionEvent e) {
             tpDictionary.getStyledDocument().setCharacterAttributes(
                     positionSelected, lengthSelected, selectOld, false);
-            popupMenu.setEnabled(false);
+            tpDictionary.setComponentPopupMenu(null);
             // Добавление слова в репозиторий, если его там нет
             String s = tfWord.getText().toLowerCase();
             if (s.isEmpty()) return;
@@ -152,7 +150,7 @@ class UITabDictionary extends JPanel {
                 lengthSelected = s.length();
                 tpDictionary.getStyledDocument().setCharacterAttributes(
                         positionSelected, lengthSelected, selectNew, false);
-                popupMenu.setEnabled(true);
+                tpDictionary.setComponentPopupMenu(pMenu.getPopupMenu());
                 // Коррекция отображаемого размера словаря
                 number++;
                 lNumber.setText("В словаре " + new CorrectTermination(
@@ -174,7 +172,7 @@ class UITabDictionary extends JPanel {
             bAdd.setText("Добавить слово");
             tpDictionary.getStyledDocument().setCharacterAttributes(
                     positionSelected, lengthSelected, selectOld, false);
-            popupMenu.setEnabled(false);
+            tpDictionary.setComponentPopupMenu(null);
             String s = tpDictionary.getText();
             String w = UIGeneral.getRepository().findBySub(
                     tfWord.getText().toLowerCase());
@@ -184,7 +182,7 @@ class UITabDictionary extends JPanel {
                 tpDictionary.setCaretPosition(positionSelected);
                 tpDictionary.getStyledDocument().setCharacterAttributes(
                         positionSelected, lengthSelected, selectNew, false);
-                popupMenu.setEnabled(true);
+                tpDictionary.setComponentPopupMenu(pMenu.getPopupMenu());
             }
         }
     }
@@ -253,6 +251,7 @@ class UITabDictionary extends JPanel {
             bShow.setText("Словарь показан");
             bShow.setEnabled(false);
             pBar.setEnabled(false);
+            tpDictionary.setComponentPopupMenu(pMenu.getPopupMenu());
             tfWord.requestFocus();
         }
     }
@@ -265,26 +264,29 @@ class UITabDictionary extends JPanel {
     class ClickListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
-            tpDictionary.getStyledDocument().setCharacterAttributes(
-                    positionSelected, lengthSelected, selectOld, false);
-            popupMenu.setEnabled(false);
             String s = tpDictionary.getText();
-            if (tpDictionary.getCaretPosition() <= s.indexOf('\n')) {
-                tpDictionary.setCaretPosition(0);
-            } else {
-                while (s.charAt(tpDictionary.getCaretPosition() - 1) != '\n') {
-                    tpDictionary.setCaretPosition(tpDictionary.getCaretPosition() - 1);
+            if (!s.isEmpty()) {
+                tpDictionary.getStyledDocument().setCharacterAttributes(
+                        positionSelected, lengthSelected, selectOld, false);
+                tpDictionary.setComponentPopupMenu(null);
+                if (tpDictionary.getCaretPosition() <= s.indexOf('\n')) {
+                    tpDictionary.setCaretPosition(0);
+                } else {
+                    while (s.charAt(tpDictionary.getCaretPosition() - 1) != '\n') {
+                        tpDictionary.setCaretPosition(
+                                tpDictionary.getCaretPosition() - 1);
+                    }
                 }
+                positionSelected = tpDictionary.getCaretPosition();
+                int temp = positionSelected;
+                while (s.charAt(temp) != '\n') {
+                    temp++;
+                }
+                lengthSelected = temp - positionSelected;
+                tpDictionary.getStyledDocument().setCharacterAttributes(
+                        positionSelected, lengthSelected, selectNew, false);
+                tpDictionary.setComponentPopupMenu(pMenu.getPopupMenu());
             }
-            positionSelected = tpDictionary.getCaretPosition();
-            int temp = positionSelected;
-            while (s.charAt(temp) != '\n') {
-                temp++;
-            }
-            lengthSelected = temp - positionSelected;
-            tpDictionary.getStyledDocument().setCharacterAttributes(
-                    positionSelected, lengthSelected, selectNew, false);
-            popupMenu.setEnabled(true);
         }
     }
 
@@ -297,10 +299,10 @@ class UITabDictionary extends JPanel {
             String w = tpDictionary.getText().substring(positionSelected,
                     positionSelected + lengthSelected);
             switch (e.getActionCommand()) {
-                case "Google": popupMenu.searchNet(w, "g"); break;
-                case "Яндекс": popupMenu.searchNet(w, "y"); break;
-                case "Википедия": popupMenu.searchNet(w, "w"); break;
-                case "Викисловарь": popupMenu.searchNet(w, "d"); break;
+                case "Google": pMenu.searchNet(w, "g"); break;
+                case "Яндекс": pMenu.searchNet(w, "y"); break;
+                case "Википедия": pMenu.searchNet(w, "w"); break;
+                case "Викисловарь": pMenu.searchNet(w, "d"); break;
             }
         }
     }
@@ -324,7 +326,7 @@ class UITabDictionary extends JPanel {
             }
             tpDictionary.getStyledDocument().setCharacterAttributes(
                     positionSelected, lengthSelected, selectOld, false);
-            popupMenu.setEnabled(false);
+            tpDictionary.setComponentPopupMenu(null);
             tfWord.setText("");
             bAdd.setText("Слово удалено");
             // Коррекция отображаемого размера словаря
