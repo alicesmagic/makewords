@@ -9,6 +9,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class UIGeneral extends JFrame {
     private static WordsRepository repository;
@@ -87,7 +89,6 @@ public class UIGeneral extends JFrame {
         this.setResizable(false);
         this.setSize(320, 600);
         this.setLocationRelativeTo(null);
-//        this.setLocation(1000,150); // для удобства отладки
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setIconImage(getToolkit().getImage("icon.png"));
 

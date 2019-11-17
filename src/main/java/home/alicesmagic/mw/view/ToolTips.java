@@ -1,5 +1,7 @@
 package home.alicesmagic.mw.view;
 
+import javax.swing.*;
+
 class ToolTips {
     String forTfLetters =
             "<html><center>Это поле предназначено для ввода букв, из<br>" +
@@ -33,5 +35,4 @@ class ToolTips {
             "Чтобы его увидеть, нужно нажать на эту кнопку.<br>" +
             "Загрузка займет определенное время.<br>" +
             "Придется немного подождать.";
-
 }

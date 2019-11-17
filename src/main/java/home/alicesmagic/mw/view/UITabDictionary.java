@@ -10,8 +10,8 @@ import java.awt.event.*;
 import java.util.List;
 
 class UITabDictionary extends JPanel {
-    private int number = UIGeneral.getRepository().getAll().size();
     private JTextField tfWord;
+    private int number = UIGeneral.getRepository().getAll().size();
     private JButton bAdd;
     private JTextPane tpDictionary;
     private JLabel lNumber;
@@ -21,11 +21,18 @@ class UITabDictionary extends JPanel {
     private SimpleAttributeSet selectNew;
     private int positionSelected = 0;
     private int lengthSelected = 0;
+    private PopupMenu popupMenu;
 
     // Формирование вкладки "Словарь" интерфейса
     UITabDictionary() {
         this.setLayout(new MigLayout());
         ToolTips toolTips = new ToolTips();
+        popupMenu = new PopupMenu();
+        popupMenu.getGoogle().addActionListener(new SearchListener());
+        popupMenu.getYandex().addActionListener(new SearchListener());
+        popupMenu.getWiki().addActionListener(new SearchListener());
+        popupMenu.getWidi().addActionListener(new SearchListener());
+        popupMenu.getDel().addActionListener(new DelListener());
 
         // Текстовое поле для ввода искомого слова в словаре
         tfWord = new JTextField(15) {
@@ -63,6 +70,9 @@ class UITabDictionary extends JPanel {
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         tpDictionary.setFont(new Font("Arial", Font.PLAIN, 20));
         tpDictionary.setEditable(false);
+        JPopupMenu popup = popupMenu.getPopupMenu();
+        tpDictionary.setComponentPopupMenu(popup);
+        tpDictionary.addMouseListener(new ClickListener());
         JScrollPane spDictionary = new JScrollPane(tpDictionary);
         this.add(spDictionary, "span, push, grow");
 
@@ -116,6 +126,9 @@ class UITabDictionary extends JPanel {
      */
     class bAddListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+            tpDictionary.getStyledDocument().setCharacterAttributes(
+                    positionSelected, lengthSelected, selectOld, false);
+            popupMenu.setEnabled(false);
             // Добавление слова в репозиторий, если его там нет
             String s = tfWord.getText().toLowerCase();
             if (s.isEmpty()) return;
@@ -139,6 +152,7 @@ class UITabDictionary extends JPanel {
                 lengthSelected = s.length();
                 tpDictionary.getStyledDocument().setCharacterAttributes(
                         positionSelected, lengthSelected, selectNew, false);
+                popupMenu.setEnabled(true);
                 // Коррекция отображаемого размера словаря
                 number++;
                 lNumber.setText("В словаре " + new CorrectTermination(
@@ -160,6 +174,7 @@ class UITabDictionary extends JPanel {
             bAdd.setText("Добавить слово");
             tpDictionary.getStyledDocument().setCharacterAttributes(
                     positionSelected, lengthSelected, selectOld, false);
+            popupMenu.setEnabled(false);
             String s = tpDictionary.getText();
             String w = UIGeneral.getRepository().findBySub(
                     tfWord.getText().toLowerCase());
@@ -169,6 +184,7 @@ class UITabDictionary extends JPanel {
                 tpDictionary.setCaretPosition(positionSelected);
                 tpDictionary.getStyledDocument().setCharacterAttributes(
                         positionSelected, lengthSelected, selectNew, false);
+                popupMenu.setEnabled(true);
             }
         }
     }
@@ -232,12 +248,90 @@ class UITabDictionary extends JPanel {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            tpDictionary.setCaretPosition(0);
+            tpDictionary.setCaretPosition(1);
             pBar.setValue(100);
             bShow.setText("Словарь показан");
             bShow.setEnabled(false);
             pBar.setEnabled(false);
             tfWord.requestFocus();
+        }
+    }
+
+    /**
+     * Внутренний класс - слушатель мыши в текстовой панели.
+     * Устанавливает позицию слова по клику мыши, вычисляет его длину и
+     * подсвечивает это слово.
+     */
+    class ClickListener extends MouseAdapter {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            tpDictionary.getStyledDocument().setCharacterAttributes(
+                    positionSelected, lengthSelected, selectOld, false);
+            popupMenu.setEnabled(false);
+            String s = tpDictionary.getText();
+            if (tpDictionary.getCaretPosition() <= s.indexOf('\n')) {
+                tpDictionary.setCaretPosition(0);
+            } else {
+                while (s.charAt(tpDictionary.getCaretPosition() - 1) != '\n') {
+                    tpDictionary.setCaretPosition(tpDictionary.getCaretPosition() - 1);
+                }
+            }
+            positionSelected = tpDictionary.getCaretPosition();
+            int temp = positionSelected;
+            while (s.charAt(temp) != '\n') {
+                temp++;
+            }
+            lengthSelected = temp - positionSelected;
+            tpDictionary.getStyledDocument().setCharacterAttributes(
+                    positionSelected, lengthSelected, selectNew, false);
+            popupMenu.setEnabled(true);
+        }
+    }
+
+    /**
+     * Внутренний класс - слушатель клика кнопки "Показать весь словарь".
+     * Запускает отдельный поток в суб-классе SwingWorker для загрузки словаря.
+     */
+    public class SearchListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String w = tpDictionary.getText().substring(positionSelected,
+                    positionSelected + lengthSelected);
+            switch (e.getActionCommand()) {
+                case "Google": popupMenu.searchNet(w, "g"); break;
+                case "Яндекс": popupMenu.searchNet(w, "y"); break;
+                case "Википедия": popupMenu.searchNet(w, "w"); break;
+                case "Викисловарь": popupMenu.searchNet(w, "d"); break;
+            }
+        }
+    }
+
+    /**
+     * Внутренний класс - слушатель клика кнопки "Показать весь словарь".
+     * Запускает отдельный поток в суб-классе SwingWorker для загрузки словаря.
+     */
+    public class DelListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String w = tpDictionary.getText().substring(positionSelected,
+                    positionSelected + lengthSelected);
+            UIGeneral.getRepository().removeWord(w);
+            UIGeneral.getRepository().saveDictionary();
+            // Удаление слова из текстовой панели
+            try {
+                tpDictionary.getDocument().remove(tpDictionary
+                        .getCaretPosition(), lengthSelected + 1);
+            } catch (BadLocationException ex) {
+                ex.printStackTrace();
+            }
+            tpDictionary.getStyledDocument().setCharacterAttributes(
+                    positionSelected, lengthSelected, selectOld, false);
+            popupMenu.setEnabled(false);
+            tfWord.setText("");
+            bAdd.setText("Слово удалено");
+            // Коррекция отображаемого размера словаря
+            number--;
+            lNumber.setText("В словаре " + new CorrectTermination(
+                    "слово", "слова", "слов")
+                    .getNumAndWord(number));
         }
     }
 }

@@ -18,11 +18,22 @@ class UITabWords extends JPanel {
     private JSpinner sLength;
     private JLabel lLetters;
     private int maxLetters = 4;
+    private SimpleAttributeSet selectOld;
+    private SimpleAttributeSet selectNew;
+    private int positionSelected = 0;
+    private int lengthSelected = 0;
+    private PopupMenu popupMenu;
 
     // Формирование вкладки "Поиск слов" интерфейса
     UITabWords() {
         this.setLayout(new MigLayout());
         ToolTips toolTips = new ToolTips();
+        popupMenu = new PopupMenu();
+        popupMenu.getGoogle().addActionListener(new SearchListener());
+        popupMenu.getYandex().addActionListener(new SearchListener());
+        popupMenu.getWiki().addActionListener(new SearchListener());
+        popupMenu.getWidi().addActionListener(new SearchListener());
+        popupMenu.getDel().addActionListener(new DelListener());
 
         // Текстовое поле для ввода исходных символов
         tfLetters = new JTextField(10) {
@@ -61,6 +72,9 @@ class UITabWords extends JPanel {
         doc.setParagraphAttributes(0, doc.getLength(), center, false);
         tpResult.setFont(new Font("Arial", Font.PLAIN, 20));
         tpResult.setEditable(false);
+        JPopupMenu popup = popupMenu.getPopupMenu();
+        tpResult.setComponentPopupMenu(popup);
+        tpResult.addMouseListener(new ClickListener());
         JScrollPane spResult = new JScrollPane(tpResult);
         this.add(spResult, "span, push, grow");
 
@@ -81,6 +95,7 @@ class UITabWords extends JPanel {
         lLetters.setFont(new Font("Arial", Font.PLAIN, 16));
         lLetters.setHorizontalAlignment(JTextField.LEFT);
 
+        // Панель объединяющая три предыдущих элемента
         JPanel panSpin = new JPanel() {
             @Override
             public Point getToolTipLocation(MouseEvent e) {
@@ -92,6 +107,14 @@ class UITabWords extends JPanel {
         panSpin.add(lLetters);
         panSpin.setToolTipText(toolTips.forPanSpin);
         this.add(panSpin, "gapleft 10");
+
+        // Установка атрибутов для выделения найденных слов
+        selectOld = new SimpleAttributeSet();
+        StyleConstants.setFontSize(selectOld, 20);
+        StyleConstants.setForeground(selectOld, Color.lightGray);
+        selectNew = new SimpleAttributeSet();
+        StyleConstants.setFontSize(selectNew, 25);
+        StyleConstants.setForeground(selectNew, Color.white);
     }
 
     /**
@@ -129,6 +152,9 @@ class UITabWords extends JPanel {
         }
         tpResult.setText(result);
         tpResult.setCaretPosition(0);
+        tpResult.getStyledDocument().setCharacterAttributes(
+                0, result.length(), selectOld, false);
+        popupMenu.setEnabled(false);
     }
 
     /**
@@ -152,6 +178,85 @@ class UITabWords extends JPanel {
             lLetters.setText(new CorrectTermination(
                     "буква", "буквы", "букв").getWord(maxLetters));
             getResult();
+        }
+    }
+
+    /**
+     * Внутренний класс - слушатель мыши в текстовой панели.
+     * Устанавливает позицию слова по клику мыши, вычисляет его длину и
+     * подсвечивает это слово.
+     */
+    class ClickListener extends MouseAdapter {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            tpResult.getStyledDocument().setCharacterAttributes(
+                    positionSelected, lengthSelected, selectOld, false);
+            popupMenu.setEnabled(false);
+            String s = tpResult.getText();
+            if (tpResult.getCaretPosition() <= s.indexOf('\n')) {
+                tpResult.setCaretPosition(0);
+            } else {
+                while (s.charAt(tpResult.getCaretPosition() - 1) != '\n') {
+                    tpResult.setCaretPosition(tpResult.getCaretPosition() - 1);
+                }
+            }
+            positionSelected = tpResult.getCaretPosition();
+            int temp = positionSelected;
+            while (s.charAt(temp) != '\n') {
+                temp++;
+            }
+            lengthSelected = temp - positionSelected;
+            if (s.charAt(positionSelected) != '-') {
+                tpResult.getStyledDocument().setCharacterAttributes(
+                        positionSelected, lengthSelected, selectNew, false);
+                popupMenu.setEnabled(true);
+            }
+        }
+    }
+
+
+    /**
+     * Внутренний класс - слушатель клика кнопки "Показать весь словарь".
+     * Запускает отдельный поток в суб-классе SwingWorker для загрузки словаря.
+     */
+    public class SearchListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String w = tpResult.getText().substring(positionSelected,
+                    positionSelected + lengthSelected);
+//            if (w.charAt(0) == '-') {
+//                return;
+//            }
+            switch (e.getActionCommand()) {
+                case "Google": popupMenu.searchNet(w, "g"); break;
+                case "Яндекс": popupMenu.searchNet(w, "y"); break;
+                case "Википедия": popupMenu.searchNet(w, "w"); break;
+                case "Викисловарь": popupMenu.searchNet(w, "d"); break;
+            }
+        }
+    }
+
+    /**
+     * Внутренний класс - слушатель клика кнопки "Показать весь словарь".
+     * Запускает отдельный поток в суб-классе SwingWorker для загрузки словаря.
+     */
+    public class DelListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            String w = tpResult.getText().substring(positionSelected,
+                    positionSelected + lengthSelected);
+            if (UIGeneral.getRepository().getAll().contains(w)) {
+                UIGeneral.getRepository().removeWord(w);
+                UIGeneral.getRepository().saveDictionary();
+                // Удаление слова из текстовой панели
+                try {
+                    tpResult.getDocument().remove(tpResult
+                            .getCaretPosition(), lengthSelected + 1);
+                } catch (BadLocationException ex) {
+                    ex.printStackTrace();
+                }
+                tpResult.getStyledDocument().setCharacterAttributes(
+                        positionSelected, lengthSelected, selectOld, false);
+                popupMenu.setEnabled(false);
+            }
         }
     }
 }
