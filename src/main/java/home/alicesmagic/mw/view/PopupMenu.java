@@ -18,15 +18,15 @@ class PopupMenu extends JPanel {
     PopupMenu() {
         popupMenu = new JPopupMenu();
         google = new JMenuItem("Google",
-                new ImageIcon("google.png"));
+                new ImageIcon("src\\main\\resources\\google.png"));
         yandex = new JMenuItem("Яндекс",
-                new ImageIcon("yandex.png"));
+                new ImageIcon("src\\main\\resources\\yandex.png"));
         wiki = new JMenuItem("Википедия",
-                new ImageIcon("wiki.png"));
+                new ImageIcon("src\\main\\resources\\wiki.png"));
         widi = new JMenuItem("Викисловарь",
-                new ImageIcon("widi.png"));
+                new ImageIcon("src\\main\\resources\\widi.png"));
         del = new JMenuItem("Удалить из словаря",
-                new ImageIcon("del.png"));
+                new ImageIcon("src\\main\\resources\\del.png"));
 
         popupMenu.add(google);
         popupMenu.add(yandex);
