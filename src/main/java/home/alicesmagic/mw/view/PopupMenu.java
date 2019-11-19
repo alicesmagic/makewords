@@ -17,16 +17,16 @@ class PopupMenu extends JPanel {
 
     PopupMenu() {
         popupMenu = new JPopupMenu();
-        google = new JMenuItem("Google",
-                new ImageIcon("src\\main\\resources\\google.png"));
-        yandex = new JMenuItem("Яндекс",
-                new ImageIcon("src\\main\\resources\\yandex.png"));
-        wiki = new JMenuItem("Википедия",
-                new ImageIcon("src\\main\\resources\\wiki.png"));
-        widi = new JMenuItem("Викисловарь",
-                new ImageIcon("src\\main\\resources\\widi.png"));
-        del = new JMenuItem("Удалить из словаря",
-                new ImageIcon("src\\main\\resources\\del.png"));
+        google = new JMenuItem("Google", new ImageIcon(getClass()
+                .getResource("/images/google.png")));
+        yandex = new JMenuItem("Яндекс", new ImageIcon(getClass()
+                .getResource("/images/yandex.png")));
+        wiki = new JMenuItem("Википедия", new ImageIcon(getClass()
+                .getResource("/images/wiki.png")));
+        widi = new JMenuItem("Викисловарь", new ImageIcon(getClass()
+                .getResource("/images/widi.png")));
+        del = new JMenuItem("Удалить из словаря", new ImageIcon(getClass()
+                .getResource("/images/del.png")));
 
         popupMenu.add(google);
         popupMenu.add(yandex);

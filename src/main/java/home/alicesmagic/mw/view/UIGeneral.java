@@ -91,7 +91,7 @@ public class UIGeneral extends JFrame {
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setIconImage(getToolkit().getImage(
-                "src\\main\\resources\\icon.png"));
+                getClass().getResource("/images/icon.png")));
 
         DataStorage dataStorage = new DataStorage("rus");
         repository = new WordsRepository(dataStorage);
